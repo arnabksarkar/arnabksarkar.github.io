@@ -1,10 +1,84 @@
 <!DOCTYPE html>
 <html>
-
 <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<header>
-    Arnab Kar Sarkar's DataViz Project(TBD)
-</header>
+<body style="font-family: Verdana, sans-serif;;">
+<h2 style="text-align: center;">
+    Life expectency vs Population scatterplot for countries between 2007 and 2017
+</h2>
+<div class="container">
+<h3>
+    Year
+</h3>
+<div class="row align-items-center">
+    <div class="col-sm-2"><p id="value-time">2007</p></div>
+    <div class="col-sm"><div id="slider-time">A SLIDER WILL APPEAR HERE</div>
+  </div>
+</div>
 </body>
+<style>
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    color: inherit;
+}
+h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+.h2, h2 {
+    font-size: 2rem;
+}
+
+@media only screen and (min-width: 768px) {
+.container {
+    max-width: 720px;
+}
+}
+.align-items-center {
+    align-items: center!important;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+@media only screen and (min-width: 576px) {
+ .col-sm-2 {
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+}
+.col-sm {
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+
+}
+
+
+}
+
+</style>
+
 </html>
+
