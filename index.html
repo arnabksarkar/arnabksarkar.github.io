@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html>
 <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
-<script src='https://d3js.org/d3.v5.min.js'></script>
-<body style="font-family: Verdana, sans-serif;;">
+<script src='https://d3js.org/d3.v7.min.js'></script>
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
+<body style="font-family: Verdana, sans-serif;;" onload="init();">
 <h2 style="text-align: center;">
     Life expectency vs Population scatterplot for countries between 2007 and 2017
 </h2>
 <div class="container">
-<h3>
-    Year
-</h3>
+
 <div class="row align-items-center">
-    <div class="col-sm-2"><p id="value-time">2007</p></div>
-    <div class="col-sm"><div id="slider-time">A SLIDER WILL APPEAR HERE</div>
+    <div class="col-sm-2"><div>Year</div></div>
+    <div class="col-sm"><div id=""><select id="selectYear" class="year-select"></select></div>
   </div>
 </div>
+
+<svg width=1800 height=900>
+
+
+
+</svg>
+
+
+
 </body>
 <style>
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
@@ -62,6 +71,7 @@ h2 {
     padding-left: 15px;
     flex: 0 0 16.666667%;
     max-width: 16.666667%;
+    text-align: right;
 }
 .col-sm {
     flex-basis: 0;
@@ -75,10 +85,66 @@ h2 {
 
 }
 
+}
 
+.year-select {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;    
 }
 
 </style>
+
+<script>
+// Section to add the dropdown years and a change event    
+var yearList = d3.range(0, 10).map(function(d) {
+    d = new Date(2007 + d, 0, 1);
+    return d.getFullYear(); 
+});
+
+d3.select("#selectYear")
+    .selectAll('yearOptions')
+    .data(yearList)
+    .enter()
+    .append('option')
+    .text(function (d) { return d; }) 
+    .attr("value", function (d) { return d; })
+
+
+d3.select("#selectYear").on("change", function(d){
+    selectedYear = this.value;
+    //updateChart(selectedGroup)
+    console.log("selected year ", selectedYear);
+})
+// call the init function to asynchornously load csv file.
+// once loaded we can then plot the graph.
+let regions = []
+let selected_regions = []
+let selected_year = 2007
+let csv_data, xs, ys, cs = null
+async function init(){
+    csv_data = await d3.csv('Avg_pop_vs_avg_lyf.csv');
+    
+
+}
+
+
+
+
+</script>
+
+
 
 </html>
 
