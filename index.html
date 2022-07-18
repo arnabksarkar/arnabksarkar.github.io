@@ -153,7 +153,7 @@ div.tooltip {
 
 <script>
 // Section to add the dropdown years and a change event    
-var regionList = ['All', "South Asia", "Europe & Central Asia", "Middle East & North Africa", "East Asia & Pacific", "Sub-Saharan Africa", "Latin America & Caribbean", "North America"]
+let regionList = ['All', "South Asia", "Europe & Central Asia", "Middle East & North Africa", "East Asia & Pacific", "Sub-Saharan Africa", "Latin America & Caribbean", "North America"]
 
 
 // call the init function to asynchornously load csv file.
@@ -200,24 +200,15 @@ function minMax(items, isMin) {
 
 function creategraph(selectedYear){    
     let margin = 80;
-    let svg_dim = 700;
-    let svg_dim2 = 1700;
-    let max_population = 0;
+    let ys_dim = 700;
+    let xs_dim = 1700;
 
     let select_year_data = csv_data.filter(function(e){return (e.Year==selectedYear)});
     
-    clear_all = [];
-    d3.selectAll("g").data(clear_all).exit().remove();
-
-    pop_array = csv_data.map((obj) => Object.values(obj).slice(4, 5));
-
-    max_population =  minMax(pop_array, false);
-
+    let max_population =  minMax(csv_data.map((obj) => Object.values(obj).slice(4, 5)), false);
     let min_population = minMax(csv_data.map((obj) => Object.values(obj).slice(4, 5)), true);;
-    
-    max_lifeexp =  minMax(csv_data.map((obj) => Object.values(obj).slice(3, 4)), false);
-    
 
+    let max_lifeexp =  minMax(csv_data.map((obj) => Object.values(obj).slice(3, 4)), false);
     let min_lifeexp =  minMax(csv_data.map((obj) => Object.values(obj).slice(3, 4)), true);
 
 
@@ -268,8 +259,8 @@ function creategraph(selectedYear){
                 });
         });
 
-    xs = d3.scaleLog().domain([10000, max_population]).range([0,svg_dim2]);
-    ys = d3.scaleLinear().domain([min_lifeexp,max_lifeexp]).range([svg_dim,0]);
+    xs = d3.scaleLog().domain([10000, max_population]).range([0,xs_dim]);
+    ys = d3.scaleLinear().domain([min_lifeexp,max_lifeexp]).range([ys_dim,0]);
     cs = d3.scaleOrdinal().domain(regions).range(["#ef8a8a", "lightseagreen", "darkorange", "deepskyblue", "#224c4d", "maroon", "#edd13a"]);
     
     d3.select('#svg')
@@ -279,8 +270,8 @@ function creategraph(selectedYear){
     
     let graph = d3.select("#graph");
 
-
-    graph.selectAll("legendCircles")
+    // Creating legend circles of regions    
+    graph.selectAll("regionCircles")
             .data(selected_regions)
             .enter()
             .append("circle")
@@ -289,7 +280,8 @@ function creategraph(selectedYear){
             .attr("cy", function(d,i){ return 750 + i*20}) // 10 is where the first dot appears. 20 is the distance between dots
             .attr("r", 7)
             .style("fill", function(d){ return cs(d)})
-    
+
+    // Creating legend text   
     graph.selectAll("regionNames")
         .data(selected_regions)
         .enter()
@@ -416,11 +408,11 @@ function creategraph(selectedYear){
                                 '</div>' + 
                                 '<div class="row">'+
                                 '<div class="col-sm-6"><label>Avg. Population:</label></div>'+
-                                '<div class="col-sm"><div style="font-weight:bold">'+d["Avg. Total Population"]+ '</div></div>'+
+                                '<div class="col-sm"><div style="font-weight:bold">'+Number(d["Avg. Total Population"]).toLocaleString('en-US')+ '</div></div>'+
                                 '</div>'  +    
                                 '<div class="row">'+
                                 '<div class="col-sm-6"><label>Avg. Life Expectancy:</label></div>'+
-                                '<div class="col-sm"><div style="font-weight:bold">'+d["Avg. Life Expectancy"]+ '</div></div>'+
+                                '<div class="col-sm"><div style="font-weight:bold">'+Number(d["Avg. Life Expectancy"]).toFixed(2)+ '</div></div>'+
                                 '</div>';    
                     return div_html;
                 })
@@ -449,14 +441,14 @@ function creategraph(selectedYear){
         .call(d3.axisLeft(ys).tickFormat(d3.format("~s")))
 
     d3.select("svg").append("g")
-        .attr("transform", "translate(" + margin + "," + (svg_dim+margin+20) + ")")
+        .attr("transform", "translate(" + margin + "," + (ys_dim+margin+20) + ")")
         .call(d3.axisBottom(xs).tickValues([10000, 100000, 1000000, 10000000, 100000000, 1000000000]).tickFormat(d3.format("d")))
 
     d3.select("svg")
         .append("text")       
         .attr("text-anchor", "end")
         .attr("x", 1000)
-        .attr("y", 1.75*margin+svg_dim+20)
+        .attr("y", 1.75*margin+ys_dim+20)
         .style('fill', 'red')
         .style('font-weight', 'bold')
         .text("Population (logarithmic scale)")
@@ -465,7 +457,7 @@ function creategraph(selectedYear){
         .append("text")
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-90)")
-        .attr("x", -svg_dim/3)
+        .attr("x", -ys_dim/3)
         .attr("y", 20)
         .attr("dy", ".25em")
         .style('fill', 'red')
@@ -497,31 +489,31 @@ function creategraph(selectedYear){
 function do_filter(data){
     let year_data =  data.filter(function(e){return (e.Year==running_year)});
     for(i=0; i<year_data.length; i++){
-                let country = year_data[i]["Country Code"];
-                let region = year_data[i]["Region"]
-                let life_exp = Number(year_data[i]["Avg. Life Expectancy"])
-                let pop = Number(year_data[i]["Avg. Total Population"]);
-                const transition = d3.transition()
-                    .duration(2000).delay(200)
-                    .ease(d3.easeQuadInOut);
+        let country_code = year_data[i]["Country Code"];
+        let region = year_data[i]["Region"];
+        let life_exp = Number(year_data[i]["Avg. Life Expectancy"]);
+        let pop = Number(year_data[i]["Avg. Total Population"]);
+        const transition = d3.transition()
+            .duration(2000).delay(200)
+            .ease(d3.easeQuadInOut);
 
-                if((selected_region === 'All' || selected_region === region)){
-                   d3.select("#" + country ).attr("opacity",1);
-                   d3.select("#" + 'foreignObject'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",1);
-                   d3.select("#" + 'dot'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",1);
-                   if (selected_region === 'Sub-Saharan Africa'){
-                    d3.select(".annotationAfrica").attr("opacity",1);  
-                   } 
-                }
-                else{
-                    d3.select("#" + country ).attr("opacity",0);
-                    d3.select("#" + 'foreignObject'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",0);
-                    d3.select("#" + 'dot'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",0);
-                }
-
-                d3.select("#" + country ).transition(transition).attr("transform", "translate(" + xs(pop) + "," + ys(life_exp) + ")");
-                d3.select("#" + country ).datum(year_data[i]);
+        if((selected_region === 'All' || selected_region === region)){
+            d3.select("#" + country_code ).attr("opacity",1);
+            d3.select("#" + 'foreignObject'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",1);
+            d3.select("#" + 'dot'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",1);
+            if (selected_region === 'Sub-Saharan Africa'){
+            d3.select(".annotationAfrica").attr("opacity",1);  
             } 
+        }
+        else{
+            d3.select("#" + country_code ).attr("opacity",0);
+            d3.select("#" + 'foreignObject'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",0);
+            d3.select("#" + 'dot'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",0);
+        }
+
+        d3.select("#" + country_code ).transition(transition).attr("transform", "translate(" + xs(pop) + "," + ys(life_exp) + ")");
+        d3.select("#" + country_code ).datum(year_data[i]);
+    } 
 }
 
 
@@ -620,7 +612,7 @@ function getAnnotationTrend(){
             {
                 type: d3.annotationCallout,
                 note: {
-                    label: "As the year progresses we can see the Life expectancy and the population increases.",
+                    label: "As the year progresses we can see the Life expectancy and the population increases regardless of regions.",
                     title: "Trend 2",
                     wrap: 340
                 },
@@ -666,7 +658,4 @@ function getAnnotationAfrica(){
 }
 
 </script>
-
-
 </html>
-
