@@ -11,7 +11,7 @@
 
 <div class="row align-items-center">
     <div class="col-sm-2"><div>Regions</div></div>
-    <div class="col-sm"><div id=""><select id="selectRegion" class="year-select"></select></div>
+    <div class="col-sm"><div id=""><select id="selectRegion" class="region-select"></select></div>
   </div>
 </div>
 
@@ -93,7 +93,7 @@ h2 {
 
 }
 
-.year-select {
+.region-select {
     display: block;
     width: 100%;
     padding: 0.375rem 2.25rem 0.375rem 0.75rem;
@@ -110,44 +110,26 @@ h2 {
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;    
 }
 
-div.tooltip {
+.tooltip {
         position: absolute;
         text-align: center;
         width: 500px;
         padding: 2px;
-        background: #e9e9e9;
+        background: #ddf2f9;
         border: 1px;
-        border-radius: 8px;
+        border-radius: 10px;
         pointer-events: none;
         border-style: solid;
     }
 
-.selected-year{
-    fill: #007bff !important;
-    background-color: transparent;
-    background-image: none;
-    border-color: #007bff;
+
+
+.year-rect{
+    stroke: #353232;
+    stroke-width: 2;
+    fill-opacity: 0.5;
+    stroke-opacity: 0.9;
 }
-
-.year{
-    fill:lightgray;
-    cursor: pointer;
-    display: inline-block;
-    font-weight: 400;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    user-select: none;
-    border: 1px solid transparent;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: 0.25rem;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-}
-
-
-
 
 </style>
 
@@ -198,12 +180,12 @@ function minMax(items, isMin) {
 }
 
 
-function creategraph(selectedYear){    
+function creategraph(){    
     let margin = 80;
     let ys_dim = 700;
     let xs_dim = 1700;
 
-    let select_year_data = csv_data.filter(function(e){return (e.Year==selectedYear)});
+    let select_year_data = csv_data.filter(function(e){return (e.Year==running_year)});
     
     let max_population =  minMax(csv_data.map((obj) => Object.values(obj).slice(4, 5)), false);
     let min_population = minMax(csv_data.map((obj) => Object.values(obj).slice(4, 5)), true);;
@@ -227,7 +209,7 @@ function creategraph(selectedYear){
         .data(years)
         .enter()
         .append("g")
-        .attr("transform", function(d, i) { return "translate(" + (730+i*65) + ",30)"; })
+        .attr("transform", function(d, i) { return "translate(" + (730+i*65) + ",40)"; })
         .append("text")
         .text(function(d,i){return(years[i])})
         .style('font-weight', 600);
@@ -236,25 +218,24 @@ function creategraph(selectedYear){
         .selectAll("g")
         .each(function(d, i)
         {
-            d3.select(this).append("rect")
+            d3.select(this)
+                .append("circle")
                 .attr("id", "year"+String(d))
-                .attr('x', -5)
-                .attr('y', -15)
-                .attr('opacity', .3)
-                .attr('width', 56)
-                .attr('height', 19)
-                .attr('stroke', 'black')
+                .attr('cx', 22)
+                .attr('cy', -5)
+                .attr('r', 27)               
                 .attr('cursor', 'pointer')
                 .attr('fill', function(d,i)
                 {
-                    if(Number(d)===2007) return('#007bff');
-                    else return ('lightgray');
+                    if(Number(d)===running_year) return('#02c4ff');
+                    else return ('#f5cf8c');
                 })
+                .attr('class', 'year-rect')
                 .on('click', function(event,d)
                 {
                     running_year = Number(d)
-                    d3.selectAll("rect").attr("fill","lightgray")
-                    d3.select(this).attr("fill", "#007bff");
+                    d3.selectAll(".year-rect").attr("fill","#f5cf8c")
+                    d3.select(this).attr("fill", "#02c4ff");
                     do_filter(csv_data);
                 });
         });
@@ -277,7 +258,7 @@ function creategraph(selectedYear){
             .append("circle")
             .attr("id", function(d,i){ return 'dot'+d.replace(/[^A-Z0-9]+/ig, "_");})
             .attr("cx", 1450)
-            .attr("cy", function(d,i){ return 750 + i*20}) // 10 is where the first dot appears. 20 is the distance between dots
+            .attr("cy", function(d,i){ return 750 + i*19})
             .attr("r", 7)
             .style("fill", function(d){ return cs(d)})
 
@@ -288,7 +269,7 @@ function creategraph(selectedYear){
         .append("foreignObject")
         .attr("id", function(d,i){ return 'foreignObject'+d.replace(/[^A-Z0-9]+/ig, "_");})
         .attr('x', 1470)
-        .attr('y',  function(d,i){ return 740 + i*20})
+        .attr('y',  function(d,i){ return 740 + i*19})
         .attr('width', 290)
         .attr('height', 20)
         .append("xhtml:tree")
@@ -448,7 +429,8 @@ function creategraph(selectedYear){
         .append("text")       
         .attr("text-anchor", "end")
         .attr("x", 1000)
-        .attr("y", 1.75*margin+ys_dim+20)
+        .attr("y", ys_dim+155)
+        .attr("dy", ".25em")
         .style('fill', 'red')
         .style('font-weight', 'bold')
         .text("Population (logarithmic scale)")
@@ -457,9 +439,9 @@ function creategraph(selectedYear){
         .append("text")
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-90)")
-        .attr("x", -ys_dim/3)
+        .attr("x", -(ys_dim - 350))
         .attr("y", 20)
-        .attr("dy", ".25em")
+        .attr("dy", ".35em")
         .style('fill', 'red')
         .style('font-weight', 'bold')
         .text("Avg. Life Expectancy (years)");
@@ -479,41 +461,53 @@ function creategraph(selectedYear){
       .append("g")
       .attr("class", "annotationAfrica")
       .call(getAnnotationAfrica());      
-    
+
+    d3.select("svg")
+      .append("g")
+      .attr("class", "annotationSyria")
+      .call(getAnnotationSyria());  
       
     d3.select(".annotationAfrica").attr("opacity",0); 
-      
+    d3.select(".annotationSyria").attr("opacity",0);       
 }
-
 
 function do_filter(data){
     let year_data =  data.filter(function(e){return (e.Year==running_year)});
+    d3.select(".annotationSyria").attr("opacity",0); 
+    d3.select(".annotationAfrica").attr("opacity",0);  
     for(i=0; i<year_data.length; i++){
         let country_code = year_data[i]["Country Code"];
         let region = year_data[i]["Region"];
         let life_exp = Number(year_data[i]["Avg. Life Expectancy"]);
         let pop = Number(year_data[i]["Avg. Total Population"]);
         const transition = d3.transition()
-            .duration(2000).delay(200)
-            .ease(d3.easeQuadInOut);
+                             .duration(1000).delay(200)
+                             .ease(d3.easeQuadInOut);
 
         if((selected_region === 'All' || selected_region === region)){
-            d3.select("#" + country_code ).attr("opacity",1);
+            d3.select("#" + country_code ).attr("display","block");
             d3.select("#" + 'foreignObject'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",1);
             d3.select("#" + 'dot'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",1);
-            if (selected_region === 'Sub-Saharan Africa'){
-            d3.select(".annotationAfrica").attr("opacity",1);  
-            } 
+            
         }
         else{
-            d3.select("#" + country_code ).attr("opacity",0);
+            d3.select("#" + country_code ).attr("display","none");
             d3.select("#" + 'foreignObject'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",0);
             d3.select("#" + 'dot'+region.replace(/[^A-Z0-9]+/ig, "_") ).attr("opacity",0);
         }
 
+        
+
         d3.select("#" + country_code ).transition(transition).attr("transform", "translate(" + xs(pop) + "," + ys(life_exp) + ")");
         d3.select("#" + country_code ).datum(year_data[i]);
+    }
+    if(running_year == 2013 & (selected_region === 'All' || selected_region === 'Middle East & North Africa')){
+        d3.select(".annotationSyria").attr("opacity",1);
+    }
+    if (selected_region === 'Sub-Saharan Africa'){
+        d3.select(".annotationAfrica").attr("opacity",1);  
     } 
+
 }
 
 
@@ -543,7 +537,7 @@ function getAnnotationLegend(){
                 align: "left"
             },
             connector: {
-                end: "arrow",
+                end: "dot",
                 
             },
             x: 1520,
@@ -583,7 +577,23 @@ function getAnnotationLegend(){
             y: 910,
             dy: 40,
             dx: -90
+        },
+        {
+                type: d3.annotationCallout,
+                note: {
+                    label: "Hover your mouse pointer on each country circle to see more details about that country",
+                    title: "Country tooltip",
+                    wrap: 240
+                },
+                connector: {
+                end: "dot", // 'dot' also available
+                },
+                x: 1430,
+                y: 540,
+                dy: 20,
+                dx: 100
         }
+        
     
     ].map(function(d){ d.color = "#E8336D"; return d})
 
@@ -599,7 +609,7 @@ function getAnnotationTrend(){
     const annotations_trend = [ {
                 type: d3.annotationCallout,
                 note: {
-                    label: "Countries which are in High Income group tends to have higher life expectancy",
+                    label: "Countries which are in High Income group tends to have higher life expectancy. It does not change over the years.",
                     title: "Trend 1",
                     wrap: 300
                     
@@ -616,10 +626,10 @@ function getAnnotationTrend(){
                     title: "Trend 2",
                     wrap: 340
                 },
-                x: 1390,
-                y: 450,
-                dy: 30,
-                dx: 90
+                x: 490,
+                y: 455,
+                dy: 40,
+                dx: -90
             }].map(function(d){ d.color = "green"; return d})
     
     const makeAnnotations_trend = d3.annotation()
@@ -634,19 +644,17 @@ function getAnnotationAfrica(){
          
     const annotation_africa = [
              {
-                type: d3.annotationXYThreshold,
+                type: d3.annotationCalloutCircle,
                 note: {
                     label: "Most of the Sub-Saharan African countries have lower life expectancy and lower income group.",
                     title: "Africa",
-                    wrap: 290
-                },subject: {
-                    y1: 420,
-                    y2: 750
+                    wrap: 400
                 },
-                x: 580,
-                y: 650,
-                dy: -10,
-                dx: -20,
+                subject: { radius: 160, radiusPadding: 60 },
+                x: 1120,
+                y: 605,
+                dy: 30,
+                dx: -160,
                 className : "Africa"
             }].map(function(d){ d.color = "Blue"; return d});
     
@@ -656,6 +664,36 @@ function getAnnotationAfrica(){
     
     return makeAnnotation_africa;
 }
+
+function getAnnotationSyria(){
+         
+         const annotation_syria = [
+                  {
+                    type: d3.annotationCallout,
+                    note: {
+                        label: "The life expectancy was greately reduced in Syria due to Syrian war.",
+                        title: "Syria",
+                        wrap: 300
+                    },
+                    connector: {
+                    end: "arrow",
+                   // 'dot' also available
+                    },
+                    subject:{height:400},
+                    x: 1175,
+                    y: 357,
+                    dy: 110,
+                    dx: 270 ,
+                    
+                 }].map(function(d){ d.color = "Blue"; return d});
+         
+         const makeAnnotation_syria = d3.annotation()
+                 .type(d3.annotationLabel)
+                 .annotations(annotation_syria);
+         
+         return makeAnnotation_syria;
+     }
+
 
 </script>
 </html>
