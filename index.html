@@ -141,7 +141,7 @@ let regionList = ['All', "South Asia", "Europe & Central Asia", "Middle East & N
 // call the init function to asynchornously load csv file.
 // once loaded we can then plot the graph.
 let csv_data, xs, ys, cs = null
-let running_year = 2007, selected_region = 'All'
+let running_year = 2011, selected_region = 'All'
 let makeAnnotations, makeAnnotations1, makeAnnotations2, makeAnnotations3 = null
 
 async function init(){
@@ -468,7 +468,7 @@ function creategraph(){
       .call(getAnnotationSyria());  
       
     d3.select(".annotationAfrica").attr("opacity",0); 
-    d3.select(".annotationSyria").attr("opacity",0);       
+    d3.select(".annotationSyria").attr("opacity",1);       
 }
 
 function do_filter(data){
@@ -589,7 +589,7 @@ function getAnnotationLegend(){
                 end: "dot", // 'dot' also available
                 },
                 x: 1430,
-                y: 540,
+                y: 560,
                 dy: 20,
                 dx: 100
         }
@@ -671,7 +671,7 @@ function getAnnotationSyria(){
                   {
                     type: d3.annotationCallout,
                     note: {
-                        label: "The life expectancy was greately reduced in Syria due to Syrian war.",
+                        label: "The life expectancy was greately reduced in Syria due to Syrian civil war.",
                         title: "Syria",
                         wrap: 300
                     },
@@ -680,9 +680,9 @@ function getAnnotationSyria(){
                    // 'dot' also available
                     },
                     subject:{height:400},
-                    x: 1175,
-                    y: 357,
-                    dy: 110,
+                    x: 1185,
+                    y: 335,
+                    dy: 138,
                     dx: 270 ,
                     
                  }].map(function(d){ d.color = "Blue"; return d});
