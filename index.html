@@ -115,9 +115,27 @@
             pointer-events: none;
         }
         .hero-content {
-            max-width: 750px;
+            max-width: 850px;
             text-align: center;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hero-photo {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--border);
+            box-shadow: 0 0 40px var(--accent-glow), 0 8px 32px rgba(0,0,0,0.4);
+            margin-bottom: 2rem;
+            transition: all 0.4s ease;
+        }
+        .hero-photo:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 60px var(--accent-glow), 0 8px 32px rgba(0,0,0,0.4);
+            transform: scale(1.04);
         }
         .hero-badge {
             display: inline-block;
@@ -620,6 +638,8 @@
 <!-- ─── HERO ─── -->
 <section class="hero">
     <div class="hero-content fade-in">
+        <!-- Replace 'headshot.jpg' with your actual photo filename -->
+        <img src="headshot.jpg" alt="Arnab KarSarkar" class="hero-photo">
         <div class="hero-badge">AI Architect at Okta</div>
         <h1>Arnab <span class="accent">KarSarkar</span></h1>
         <p class="hero-subtitle">
@@ -798,6 +818,34 @@
                     <a href="#" style="opacity: 0.5; pointer-events: none;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         In Development
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project 4: D3 Visualization -->
+            <div class="project-card fade-in" style="transition-delay: 0.3s">
+                <div class="project-icon">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                </div>
+                <div class="project-status status-live">
+                    <span class="status-dot"></span> Live
+                </div>
+                <h3>Life Expectancy vs Population</h3>
+                <p>
+                    An interactive narrative visualization exploring the relationship 
+                    between life expectancy and population across countries from 2007–2017. 
+                    Built as a three-scene storytelling experience with D3.js.
+                </p>
+                <div class="project-tags">
+                    <span>D3.js</span>
+                    <span>Data Visualization</span>
+                    <span>JavaScript</span>
+                    <span>Narrative Viz</span>
+                </div>
+                <div class="project-links">
+                    <a href="projects/life-expectancy/" target="_blank">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        Live Demo
                     </a>
                 </div>
             </div>
