@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Right Chunk, Wrong Context Problem — Arnab KarSarkar</title>
+    <meta name="description" content="Why enterprise RAG retrieval silently breaks at scale — and how to fix it with semantic chunking, hybrid search, reranking, and hierarchical retrieval.">
+
+    <!-- Open Graph / LinkedIn -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://arnabksarkar.github.io/blog/rag-part1.html">
+    <meta property="og:title" content="The Right Chunk, Wrong Context Problem — Enterprise RAG Part 1">
+    <meta property="og:description" content="Why enterprise RAG retrieval silently breaks at scale — and how to fix it.">
+    <meta property="og:image" content="https://arnabksarkar.github.io/headshot.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ═══ THEME VARIABLES ═══ */
+        :root {
+            --bg: #0B0F19;
+            --bg-card: #131825;
+            --bg-card-hover: #1A2035;
+            --border: #1E2A3A;
+            --text: #E2E8F0;
+            --text-muted: #8B9DC3;
+            --accent: #4FC3F7;
+            --accent-glow: rgba(79, 195, 247, 0.15);
+            --green: #66BB6A;
+            --font-display: 'Source Serif 4', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        html.light {
+            --bg: #FAFBFE;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F5F7FF;
+            --border: #E2E8F0;
+            --text: #1A202C;
+            --text-muted: #5A6A85;
+            --accent: #2563EB;
+            --accent-glow: rgba(37, 99, 235, 0.08);
+            --green: #16A34A;
+        }
+
+        /* ═══ RESET & BASE ═══ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+            transition: background 0.35s ease, color 0.35s ease;
+        }
+
+        /* ═══ NAV ═══ */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.35s ease, border-color 0.35s ease;
+        }
+        html.light nav { background: rgba(250, 251, 254, 0.9); }
+        .nav-inner {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .nav-logo span { color: var(--accent); }
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-right a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.25s;
+        }
+        .nav-right a:hover { color: var(--text); }
+
+        /* ═══ THEME TOGGLE ═══ */
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 0 3px;
+            flex-shrink: 0;
+        }
+        .theme-toggle:hover { border-color: var(--accent); }
+        .theme-toggle-knob {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle-knob svg {
+            width: 11px;
+            height: 11px;
+            fill: var(--bg);
+            transition: fill 0.3s;
+        }
+        html.light .theme-toggle-knob { transform: translateX(20px); }
+
+        /* ═══ ARTICLE ═══ */
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 7rem 2rem 4rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: opacity 0.25s;
+        }
+        .back-link:hover { opacity: 0.8; }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            font-weight: 700;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.6rem;
+        }
+        .subtitle {
+            font-family: var(--font-display);
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        .meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 3rem 0 1rem;
+            letter-spacing: -0.01em;
+        }
+        h3 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        p { margin-bottom: 1.3rem; }
+        a { color: var(--accent); }
+
+        /* ═══ CODE ═══ */
+        pre {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.3rem 1.5rem;
+            overflow-x: auto;
+            font-size: 0.84rem;
+            line-height: 1.7;
+            margin-bottom: 1.8rem;
+            transition: background 0.35s ease, border-color 0.35s ease;
+        }
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+        }
+        p code, li code {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.15em 0.4em;
+            font-size: 0.84em;
+        }
+
+        /* ═══ BLOCKQUOTE ═══ */
+        blockquote {
+            border-left: 3px solid var(--accent);
+            padding-left: 1.4rem;
+            margin: 1.8rem 0;
+            color: var(--text-muted);
+            font-style: italic;
+            line-height: 1.7;
+        }
+        blockquote strong { color: var(--text); }
+
+        /* ═══ TABLE ═══ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0 2rem;
+            font-size: 0.9rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ═══ ARCHITECTURE IMAGE ═══ */
+        .architecture-img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 1.5rem 0 2rem;
+        }
+
+        /* ═══ CTA BOX ═══ */
+        .cta-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2.5rem 2rem;
+            margin: 3rem 0;
+            text-align: center;
+            transition: background 0.35s ease, border-color 0.35s ease;
+        }
+        .cta-box p { margin-bottom: 0.5rem; }
+        .cta-box .btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.8rem;
+            background: var(--accent);
+            color: var(--bg);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: opacity 0.25s;
+        }
+        html.light .cta-box .btn { color: #fff; }
+        .cta-box .btn:hover { opacity: 0.85; }
+
+        /* ═══ SERIES NAV ═══ */
+        .series-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .series-nav a { color: var(--accent); text-decoration: none; font-weight: 500; }
+        .series-nav a:hover { text-decoration: underline; }
+        .series-nav .disabled { color: var(--text-muted); }
+
+        /* ═══ FOOTER ═══ */
+        footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media (max-width: 640px) {
+            .container { padding: 6rem 1.2rem 3rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.35rem; }
+            pre { font-size: 0.78rem; padding: 1rem; }
+            .nav-right a.hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">Arnab<span>.</span></a>
+        <div class="nav-right">
+            <a href="/#projects" class="hide-mobile">Projects</a>
+            <a href="/#contact" class="hide-mobile">Contact</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <div class="theme-toggle-knob">
+                    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══ ARTICLE ═══ -->
+<div class="container">
+    <a href="/" class="back-link">← Back to Home</a>
+
+    <h1>The Right Chunk, Wrong Context Problem</h1>
+    <p class="subtitle">Enterprise RAG: What Breaks at Scale — Part 1</p>
+    <p class="meta">February 2026 · Arnab KarSarkar · 8 min read</p>
+
+    <p>
+        Every RAG demo works beautifully on 50 PDFs. But throw in thousands of real enterprise 
+        documents — technical support articles, product manuals, policy docs — and retrieval quality 
+        <strong>silently degrades</strong>.
+    </p>
+    <p>
+        The worst part? It doesn't look broken. The vector search returns chunks. The cosine similarity 
+        scores are fine. The LLM generates a confident answer. But the answer is subtly wrong — because 
+        the retrieved chunks are semantically correct but contextually incomplete.
+    </p>
+
+    <blockquote>
+        <strong>Query:</strong> "Where is the engineering team located?"<br><br>
+        <strong>Retrieved chunk:</strong> "...and then the team relocated to the Austin office in 2023 
+        after the Denver lease expired..."<br><br>
+        <strong>What's missing:</strong> Who is "the team"? Is it engineering, sales, or support? 
+        What about teams that didn't relocate? The chunk matches "team" and "location" — but it's a 
+        fragment ripped out of a larger narrative.
+    </blockquote>
+
+    <p>
+        This is the <strong>"Right Chunk, Wrong Context"</strong> problem. It's the #1 reason enterprise 
+        RAG systems produce confidently wrong answers. And in this post, I walk through five progressively 
+        better retrieval strategies to fix it — using real enterprise data and a fully open-source stack.
+    </p>
+
+    <h2>Architecture</h2>
+    <p>
+        The pipeline compares five approaches on the same dataset and queries. Everything runs locally 
+        with no API keys.
+    </p>
+    <img src="https://raw.githubusercontent.com/arnabksarkar/enterprise-rag-series/main/architecture.png" 
+         alt="RAG Pipeline Architecture showing chunking, embedding, vector search, BM25, hybrid merge, and reranking stages" 
+         class="architecture-img" />
+
+    <h2>The Dataset</h2>
+    <p>
+        I used <a href="https://huggingface.co/datasets/rungalileo/ragbench" target="_blank">RAGBench</a> 
+        from Galileo — a 100K-example benchmark sourced from real enterprise content. Specifically, 
+        the <code>techqa</code> subset (IBM technical support documents with real user questions from 
+        developer forums) and <code>emanual</code> (product user manuals). These are long-form documents 
+        with narrative structure — exactly the kind that break with naive chunking.
+    </p>
+
+    <h2>Five Approaches, Head to Head</h2>
+
+    <h3>1. Naive Fixed-Size Chunking + Vector Search</h3>
+    <p>
+        The baseline that most tutorials teach: split every 200 characters with overlap, embed with 
+        <code>all-MiniLM-L6-v2</code>, store in ChromaDB, and search by cosine similarity. It's fast, 
+        simple, and destructive. Sentences get cut mid-thought. A paragraph about team relocation gets 
+        sliced at character 200, and the "who" and "why" end up in a different chunk than the "where."
+    </p>
+
+    <h3>2. Semantic Chunking + Vector Search</h3>
+    <p>
+        Instead of splitting at arbitrary character boundaries, split where <strong>meaning shifts</strong>. 
+        Compute embeddings for consecutive sentences and cut when cosine similarity drops below a threshold — 
+        that's where the topic changes. A section about "team relocation" stays intact instead of getting 
+        sliced at character 200. Same vector search, but the chunks are coherent.
+    </p>
+
+    <h3>3. Hybrid Search (Vector + BM25)</h3>
+    <p>
+        Pure vector search misses things. If someone searches for "LDAP SSO configuration error 5041," 
+        the embedding captures the general topic but might miss the exact error code. BM25 keyword matching 
+        catches it. Combine both with Reciprocal Rank Fusion (RRF) — a simple formula that merges two 
+        ranked lists without needing to normalize scores. The result: semantic understanding plus keyword 
+        precision.
+    </p>
+
+    <h3>4. Hybrid + Cross-Encoder Reranking</h3>
+    <p>
+        The initial retrieval (bi-encoder) is fast but approximate. A cross-encoder like 
+        <code>ms-marco-MiniLM-L-6-v2</code> sees the query and each candidate chunk <em>together</em>, 
+        allowing full attention between them. This adds ~50-100ms per query but significantly improves 
+        ranking quality — the most contextually relevant chunks rise to the top.
+    </p>
+
+    <h3>5. Hierarchical Chunking (Parent-Child) + Hybrid + Rerank</h3>
+    <p>
+        This is the enterprise-grade approach and the key insight of this series: 
+        <strong>decouple what you search on from what you feed the LLM.</strong>
+    </p>
+    <p>
+        Create two levels of chunks simultaneously. Small <em>child</em> chunks (200-300 tokens) are 
+        precise and embed well — great for search. Large <em>parent</em> chunks (1000-1500 tokens) 
+        carry the full context — great for the LLM. You search on children but retrieve their parents.
+    </p>
+    <p>
+        The child chunk "...and then they lived in Los Angeles for 10 years..." gets matched by vector 
+        search. But instead of sending that fragment to the LLM, you send the entire parent section — 
+        which includes who "they" are, why they moved, and what happened next.
+    </p>
+
+    <h2>Results</h2>
+    <p>
+        Evaluated on 50 real queries from RAGBench <code>techqa</code>, measuring Hit Rate@5 
+        (did a relevant document appear in the top 5?) and MRR@5 (how high did it rank?).
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Approach</th>
+                <th>Hit Rate@5</th>
+                <th>MRR@5</th>
+                <th>Avg Chunk Len</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1. Naive + vector</td>
+                <!-- UPDATE these numbers after running the notebook -->
+                <td>84%</td>
+                <td>0.732</td>
+                <td>199 chars</td>
+            </tr>
+            <tr>
+                <td>2. Semantic + vector</td>
+                <td>98%</td>
+                <td>0.95</td>
+                <td>692 chars</td>
+            </tr>
+            <tr>
+                <td>3. Semantic + hybrid</td>
+                <td>100%</td>
+                <td>0.977</td>
+                <td>824 Chars</td>
+            </tr>
+            <tr>
+                <td>4. Semantic + hybrid + rerank</td>
+                <td>100%</td>
+                <td>0.962</td>
+                <td>833 chars</td>
+            </tr>
+            <tr>
+                <td><strong>5. Hierarchical + hybrid + rerank</strong></td>
+                <td><strong>100%</strong></td>
+                <td><strong>0.958</strong></td>
+                <td>849 chars</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="color: var(--text-muted); font-size: 0.85rem;">
+        Run the notebook to see your own numbers — results will vary by hardware and model versions.
+    </p>
+
+    <h2>Key Takeaways</h2>
+    <p>
+        No single technique solves retrieval quality. The best results come from stacking improvements: 
+        semantic chunking preserves complete thoughts, hybrid search catches what embeddings miss, 
+        reranking sharpens the ranking, and hierarchical retrieval decouples search precision from 
+        context completeness.
+    </p>
+    <p>
+        In production, the choice depends on your constraints. Semantic chunking should be your baseline — 
+        always. BM25 adds zero query-time latency if pre-indexed. Reranking adds ~50-100ms but is worth it 
+        for accuracy-critical applications. Hierarchical chunking requires more ingestion complexity but 
+        delivers the biggest quality jump for enterprise documents.
+    </p>
+
+    <!-- ═══ CTA ═══ -->
+    <div class="cta-box">
+        <p><strong>Run the full notebook yourself</strong></p>
+        <p>All code, data, and results — runs locally with no API keys.</p>
+        <a href="https://github.com/arnabksarkar/enterprise-rag-series/blob/main/rag_part1_retrieval_quality.ipynb" 
+           target="_blank" class="btn">View on GitHub →</a>
+    </div>
+
+    <h2>What's Next</h2>
+    <p>
+        This post addressed the retrieval layer. But enterprise RAG has more failure modes:
+    </p>
+    <p>
+        <strong>Part 2</strong> tackles ACL and permissions at query time — ensuring the VP of Sales 
+        doesn't see engineering-only documents in their search results. 
+        <strong>Part 3</strong> explores chunking strategies across different document types, because 
+        PDFs, Slack threads, and Confluence pages all need different treatment. 
+        <strong>Part 4</strong> addresses stale content poisoning answers, and 
+        <strong>Part 5</strong> covers evaluation and observability.
+    </p>
+    <p>
+        Follow the series on <a href="https://arnabksarkar.github.io">arnabksarkar.github.io</a> or connect 
+        on <a href="https://www.linkedin.com/in/arnab-karsarkar-sw16yr/" target="_blank">LinkedIn</a>.
+    </p>
+
+    <!-- ═══ SERIES NAV ═══ -->
+    <div class="series-nav">
+        <span class="disabled">← Previous</span>
+        <span class="disabled">Part 2: ACL & Permissions — Coming Soon</span>
+    </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+    <p>© 2026 Arnab KarSarkar · <a href="/">Home</a> · <a href="https://github.com/arnabksarkar" target="_blank">GitHub</a> · <a href="https://www.linkedin.com/in/arnab-karsarkar-sw16yr/" target="_blank">LinkedIn</a></p>
+</footer>
+
+<!-- ═══ THEME TOGGLE ═══ -->
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isLight = html.classList.toggle('light');
+        updateToggleIcons(isLight);
+        try { sessionStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch(e) {}
+    }
+
+    function updateToggleIcons(isLight) {
+        const moon = document.querySelector('.icon-moon');
+        const sun = document.querySelector('.icon-sun');
+        if (moon && sun) {
+            moon.style.display = isLight ? 'none' : 'block';
+            sun.style.display = isLight ? 'block' : 'none';
+        }
+    }
+
+    try {
+        if (sessionStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('light');
+            updateToggleIcons(true);
+        }
+    } catch(e) {}
+</script>
+
+</body>
+</html>

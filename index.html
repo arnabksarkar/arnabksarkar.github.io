@@ -676,6 +676,17 @@
             section { padding: 4rem 1.5rem; }
             .footer-inner { flex-direction: column; gap: 1.5rem; text-align: center; }
         }
+        a.topic-link {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+        a.topic-link:hover {
+            text-decoration: underline;
+        }
+        a.topic-link.published {
+            color: var(--green);
+        }
     </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -841,13 +852,13 @@
                 </div>
             </div>
 
-            <!-- Project 2: Enterprise RAG (Coming Soon) -->
+            <!-- Project 2: Enterprise RAG -->
             <div class="project-card fade-in" style="transition-delay: 0.1s">
                 <div class="project-icon">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                 </div>
-                <div class="project-status status-soon">
-                    <span class="status-dot"></span> Coming Soon
+                <div class="project-status status-live">
+                    <span class="status-dot"></span> Live (In Progress)
                 </div>
                 <h3>Enterprise RAG at Scale</h3>
                 <p>
@@ -863,7 +874,7 @@
                     <span>Python</span>
                 </div>
                 <div class="project-links">
-                    <a href="#" style="opacity: 0.5; pointer-events: none;">
+                    <a href="https://github.com/arnabksarkar/enterprise-rag-series" style="opacity: 0.5; pointer-events: none;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         In Development
                     </a>
@@ -930,7 +941,7 @@
 
         <!-- Writing Series Preview -->
         <div class="writing-preview fade-in">
-            <span class="section-label">Upcoming Series</span>
+            <span class="section-label">Writing</span>
             <h3>Enterprise RAG: What Breaks at Scale</h3>
             <p>
                 A multi-part deep dive into the real problems that kill RAG systems in production — 
@@ -938,12 +949,12 @@
                 specific failure mode and shows how to solve it properly.
             </p>
             <div class="writing-topics">
-                <span>Part 1: Retrieval Quality Degradation</span>
+                <a href="/blogs/rag-part1.html" class="topic-link published">Part 1: The Right Chunk, Wrong Context Problem ✓</a>
                 <span>Part 2: ACL & Permissions at Query Time</span>
                 <span>Part 3: Chunking Strategies Across Doc Types</span>
                 <span>Part 4: Stale Content & Freshness</span>
                 <span>Part 5: Evaluation & Observability</span>
-            </div>
+            </div>  
         </div>
     </div>
 </section>
