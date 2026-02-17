@@ -484,17 +484,28 @@
         }
         .writing-topics {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            flex-direction: column;
+            gap: 0;
+        }
+        .writing-topics span,
+        .writing-topics a.topic-link {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: block;
         }
         .writing-topics span {
-            padding: 5px 14px;
-            background: rgba(255, 167, 38, 0.08);
-            border: 1px solid rgba(255, 167, 38, 0.2);
-            border-radius: 6px;
-            font-size: 0.78rem;
-            font-weight: 500;
-            color: #FFA726;
+            color: var(--text-muted);
+            background: none;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            border-radius: 0;
+        }
+        .writing-topics span:last-child,
+        .writing-topics a.topic-link:last-child {
+            border-bottom: none;
         }
 
         /* ─── CONTACT ─── */
@@ -940,7 +951,7 @@
         </div>
 
         <!-- Writing Series Preview -->
-        <div class="writing-preview fade-in">
+        <div class="writing-preview fade-in" id="rag-series">
             <span class="section-label">Writing</span>
             <h3>Enterprise RAG: What Breaks at Scale</h3>
             <p>
