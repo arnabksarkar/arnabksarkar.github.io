@@ -749,8 +749,8 @@
         <h1>Arnab <span class="accent">KarSarkar</span></h1>
         <p class="hero-subtitle">
             I build production-grade multi-agent systems and enterprise RAG platforms. 
-            16+ years turning complex business problems into scalable AI architectures 
-            that survive past the demo.
+            First AI engineer at Okta — 16+ years turning complex business problems into 
+            scalable AI architectures that survive past the demo.
         </p>
         <div class="hero-links">
             <a href="#projects" class="btn btn-primary">
@@ -772,14 +772,17 @@
                 <span class="section-label">About</span>
                 <h2 class="section-title">Building AI that ships to production.</h2>
                 <p>
-                    I'm an AI & Automation Architect at <strong>Okta</strong>, where I design 
-                    multi-agent orchestration systems that coordinate specialized AI agents 
-                    across enterprise automation workflows.
+                    I'm an AI & Automation Architect at <strong>Okta</strong>, where I was the 
+                    first dedicated AI engineer — taking AI from 0-to-1 and building the foundational 
+                    layer the organization now runs on: a centralized LLM gateway, a no-code/pro-code 
+                    agent platform, an MCP tool layer, and a multi-agent orchestration system, all 
+                    adopted company-wide.
                 </p>
                 <p>
                     My work has moved the organization from deterministic, rule-based automation 
                     toward intelligent, reasoning-based workflows — reducing manual intervention 
-                    across ITSM, customer support, and backend operations.
+                    across ITSM, customer support, and backend operations. I drive adoption 
+                    hands-on through pairing, architecture reviews, and internal enablement.
                 </p>
                 <p>
                     Before the AI wave, I spent 12+ years building the distributed, event-driven, 
@@ -793,8 +796,10 @@
                 </p>
                 <div class="tech-strip">
                     <span class="tech-tag">LangGraph</span>
-                    <span class="tech-tag">RAG</span>
                     <span class="tech-tag">Multi-Agent Systems</span>
+                    <span class="tech-tag">MCP</span>
+                    <span class="tech-tag">RAG</span>
+                    <span class="tech-tag">LLM Gateway</span>
                     <span class="tech-tag">AWS Bedrock</span>
                     <span class="tech-tag">OpenAI</span>
                     <span class="tech-tag">Anthropic Claude</span>
@@ -808,7 +813,7 @@
                 <div class="highlight-card">
                     <div class="label">Current Focus</div>
                     <div class="value">Multi-Agent Orchestration</div>
-                    <div class="desc">Coordinating Planner, Coder & Reviewer agents for end-to-end enterprise automation at Okta.</div>
+                    <div class="desc">A skills-based orchestration architecture where skills map to tools and any agent can be exposed as a tool to another via MCP — one action-taking agent instead of hundreds of point bots. Adopted company-wide at Okta.</div>
                 </div>
                 <div class="highlight-card">
                     <div class="label">Career Trajectory</div>
@@ -899,30 +904,33 @@
                 </div>
             </div>
 
-            <!-- Project 3: Placeholder for future -->
+            <!-- Project 3: Multi-Agent Orchestrator -->
             <div class="project-card fade-in" style="transition-delay: 0.2s">
                 <div class="project-icon">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                 </div>
-                <div class="project-status status-soon">
-                    <span class="status-dot"></span> Coming Soon
+                <div class="project-status status-live">
+                    <span class="status-dot"></span> In Production at Okta
                 </div>
-                <h3>Multi-Agent Orchestrator</h3>
+                <h3>Skills-Based Multi-Agent Orchestrator</h3>
                 <p>
-                    A reference LangGraph implementation of a multi-agent system 
-                    with Planner, Researcher, Coder, and Reviewer agents — featuring 
-                    state persistence and fault tolerance patterns.
+                    A production multi-agent orchestration system where reusable Skills map 
+                    to tools and any agent can be exposed as a tool to another via MCP. An 
+                    orchestrator routes work across a reasoner, skill executor, and reviewer, 
+                    with human-in-the-loop interrupts and shared state. Open-source reference 
+                    implementation in progress.
                 </p>
                 <div class="project-tags">
                     <span>LangGraph</span>
                     <span>Multi-Agent</span>
+                    <span>MCP</span>
                     <span>Python</span>
                     <span>State Management</span>
                 </div>
                 <div class="project-links">
                     <a href="#" style="opacity: 0.5; pointer-events: none;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        In Development
+                        Reference impl — coming soon
                     </a>
                 </div>
             </div>
@@ -983,7 +991,27 @@
                     <span>Part 4: Stale Content & Freshness</span>
                     <span>Part 5: Evaluation & Observability</span>
                 </div>
+        </div> 
+        <div class="writing-preview" id="rag-series">
+            <div class="writing-card-header">
+                <div class="project-status status-live">
+                    <span class="status-dot"></span> In Progress — 1 of 5 Published
+                </div>
+                <h3>From Hundreds of Bots to One Orchestrator</h3>
+                <p>
+                    Why one-bot-per-task automation collapses into sprawl, and the skills-based orchestration pattern that replaces it. 
+                    How skills map to tools, agents become tools via MCP, and one thin orchestrator routes the work.
+                </p>
+            </div>
+                <div class="writing-topics">
+                    <a href="/blogs/multi-agent-orchestration.html" class="topic-link published">Part 1: The Right Chunk, Wrong Context Problem ✓</a>
+                    <span>Part 2: ACL & Permissions at Query Time</span>
+                    <span>Part 3: Chunking Strategies Across Doc Types</span>
+                    <span>Part 4: Stale Content & Freshness</span>
+                    <span>Part 5: Evaluation & Observability</span>
+                </div>
         </div>
+
 
         <!-- 
         <div class="writing-preview" id="agents-series" style="margin-top: 1.5rem;">

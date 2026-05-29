@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Hundreds of Bots to One Orchestrator | Arnab KarSarkar</title>
+    <meta name="description" content="A skills-based multi-agent orchestration pattern: skills map to tools, agents become tools via MCP, and one orchestrator routes the work. Why bot sprawl stops scaling and what to build instead.">
+    <meta name="og:title" content="From Hundreds of Bots to One Orchestrator">
+    <meta name="og:description" content="A skills-based multi-agent orchestration pattern that replaces bot sprawl with one router.">
+    <meta name="og:type" content="article">
+    <meta name="og:url" content="https://arnabksarkar.github.io/blogs/multi-agent-orchestration.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0B0F19;
+            --bg-card: #131825;
+            --border: #1E2A3A;
+            --text: #E2E8F0;
+            --text-muted: #8B9DC3;
+            --accent: #4FC3F7;
+            --green: #66BB6A;
+            --coral: #F0997B;
+            --purple: #AFA9EC;
+            --nav-bg: rgba(11, 15, 25, 0.85);
+            --code-bg: #0E131F;
+            --font-display: 'Source Serif 4', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, sans-serif;
+        }
+        html.light {
+            --bg: #FAFBFE;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text: #1A202C;
+            --text-muted: #5A6A85;
+            --accent: #2563EB;
+            --green: #16A34A;
+            --coral: #D85A30;
+            --purple: #534AB7;
+            --nav-bg: rgba(250, 251, 254, 0.9);
+            --code-bg: #F1F4FB;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            max-width: 760px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center; height: 64px;
+        }
+        .nav-logo { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+        .nav-logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 1.75rem; list-style: none; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.25s; }
+        .nav-links a:hover { color: var(--text); }
+        .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+        .theme-toggle svg { width: 18px; height: 18px; }
+        .article { max-width: 760px; margin: 0 auto; padding: 7rem 1.5rem 4rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; margin-bottom: 2.5rem; transition: color 0.2s; }
+        .back-link:hover { color: var(--accent); }
+        .article h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+        .article .series { color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .article .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
+        .article h2 { font-family: var(--font-display); font-size: 1.7rem; font-weight: 600; letter-spacing: -0.01em; margin: 3rem 0 1rem; }
+        .article p { margin-bottom: 1.25rem; font-size: 1.05rem; color: var(--text); }
+        .article strong { color: var(--text); font-weight: 700; }
+        .article a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+        .article a:hover { border-bottom-color: var(--accent); }
+        .article ul { margin: 0 0 1.25rem 1.25rem; padding-left: 0.75rem; }
+        .article li { margin-bottom: 0.6rem; font-size: 1.05rem; }
+        .article li::marker { color: var(--accent); }
+        .figure { margin: 2rem 0; }
+        .figure svg { width: 100%; height: auto; display: block; }
+        .caption { text-align: center; color: var(--text-muted); font-size: 0.88rem; margin-top: 0.75rem; }
+        .callout { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.75rem 0; }
+        .callout p { margin-bottom: 0.5rem; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout .label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 0.5rem; }
+        code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.9em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 5px; padding: 0.12em 0.4em; color: var(--accent); }
+        table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.95rem; }
+        th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        th { color: var(--text-muted); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        td { color: var(--text); }
+        td:first-child { font-weight: 500; white-space: nowrap; }
+        tbody tr:hover { background: var(--bg-card); }
+        .footer-cta { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.95rem; }
+        .footer-cta a { color: var(--accent); }
+        footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+        .flow-dot { animation: flow 3s linear infinite; }
+        @keyframes flow { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+        @media (prefers-reduced-motion: reduce) { .flow-dot { animation: none; opacity: 0; } }
+        @media (max-width: 600px) { .nav-links { gap: 1rem; } .article { padding-top: 6rem; } table { font-size: 0.85rem; } th, td { padding: 0.6rem 0.5rem; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="https://arnabksarkar.github.io/" class="nav-logo">Arnab<span>.</span></a>
+        <ul class="nav-links">
+            <li><a href="https://arnabksarkar.github.io/#projects">Projects</a></li>
+            <li><a href="https://arnabksarkar.github.io/#contact">Contact</a></li>
+        </ul>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+    </div>
+</nav>
+
+<article class="article">
+    <a href="https://arnabksarkar.github.io/" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Home
+    </a>
+
+    <div class="series">Agent Architecture</div>
+    <h1>From Hundreds of Bots to One Orchestrator</h1>
+    <div class="meta">May 2026 &middot; Arnab KarSarkar &middot; 6 min read</div>
+
+    <p>
+        Since the launch of ChatGPT, the world changed and everyone rushed to build agents for enterprises... 
+        it felt productive. A team needs ticket triage, so you build a triage bot. Finance wants invoice lookups, so you build an invoice
+        bot. IT wants password resets, so that becomes a bot too. Each one ships and each one works.
+    </p>
+    <p>
+        A year later there are a hundred of them. Nobody remembers which does what, two of them
+        overlap, and a request that spans finance and IT cannot be finished by any single bot. This
+        is bot sprawl. The picture below is the whole problem, and the whole fix.
+    </p>
+
+    <div class="figure">
+        <svg viewBox="0 0 680 360" role="img" aria-label="Bot sprawl versus a single orchestrator">
+            <defs>
+                <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+                <path id="r1" d="M396 150 L424 150" fill="none"/>
+                <path id="r2" d="M530 144 L566 92" fill="none"/>
+                <path id="r3" d="M530 150 L566 150" fill="none"/>
+                <path id="r4" d="M530 156 L566 214" fill="none"/>
+            </defs>
+
+            <text x="160" y="30" text-anchor="middle" fill="var(--text)" font-family="var(--font-body)" font-size="15" font-weight="700">Bot sprawl</text>
+            <text x="160" y="48" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="12">you pick the bot; work stops at edges</text>
+
+            <circle cx="40" cy="155" r="18" fill="none" stroke="var(--text-muted)" stroke-width="1"/>
+            <text x="40" y="159" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="12">you</text>
+
+            <line x1="58" y1="155" x2="86" y2="92"  stroke="var(--text-muted)" stroke-width="0.6" opacity="0.6"/>
+            <line x1="58" y1="155" x2="86" y2="150" stroke="var(--text-muted)" stroke-width="0.6" opacity="0.6"/>
+            <line x1="58" y1="155" x2="86" y2="210" stroke="var(--text-muted)" stroke-width="0.6" opacity="0.6"/>
+            <line x1="58" y1="155" x2="196" y2="115" stroke="var(--text-muted)" stroke-width="0.6" opacity="0.6"/>
+            <line x1="58" y1="155" x2="200" y2="255" stroke="var(--text-muted)" stroke-width="0.6" opacity="0.6"/>
+
+            <g font-family="var(--font-body)" font-size="12">
+                <rect x="86" y="76" width="78" height="32" rx="6" fill="none" stroke="var(--coral)" stroke-width="1"/><text x="125" y="96" text-anchor="middle" fill="var(--coral)">triage bot</text>
+                <rect x="86" y="134" width="78" height="32" rx="6" fill="none" stroke="var(--coral)" stroke-width="1"/><text x="125" y="154" text-anchor="middle" fill="var(--coral)">refund bot</text>
+                <rect x="86" y="194" width="78" height="32" rx="6" fill="none" stroke="var(--coral)" stroke-width="1"/><text x="125" y="214" text-anchor="middle" fill="var(--coral)">reset bot</text>
+                <rect x="196" y="99" width="88" height="32" rx="6" fill="none" stroke="var(--coral)" stroke-width="1"/><text x="240" y="119" text-anchor="middle" fill="var(--coral)">invoice bot</text>
+                <rect x="196" y="239" width="88" height="32" rx="6" fill="none" stroke="var(--coral)" stroke-width="1"/><text x="240" y="259" text-anchor="middle" fill="var(--coral)">ticket bot</text>
+            </g>
+            <line x1="164" y1="92"  x2="196" y2="112" stroke="var(--text-muted)" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.5"/>
+            <line x1="164" y1="210" x2="196" y2="248" stroke="var(--text-muted)" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.5"/>
+            <line x1="125" y1="166" x2="240" y2="239" stroke="var(--text-muted)" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.5"/>
+
+            <line x1="340" y1="60" x2="340" y2="300" stroke="var(--border)" stroke-width="1" stroke-dasharray="2 5"/>
+
+            <text x="510" y="30" text-anchor="middle" fill="var(--text)" font-family="var(--font-body)" font-size="15" font-weight="700">One orchestrator</text>
+            <text x="510" y="48" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="12">describe a goal; it routes to skills</text>
+
+            <circle cx="378" cy="150" r="18" fill="none" stroke="var(--text-muted)" stroke-width="1"/>
+            <text x="378" y="154" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="12">you</text>
+
+            <use href="#r1" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#ar)"/>
+            <rect x="426" y="124" width="104" height="52" rx="8" fill="none" stroke="var(--purple)" stroke-width="1.2"/>
+            <text x="478" y="146" text-anchor="middle" fill="var(--purple)" font-family="var(--font-body)" font-size="13" font-weight="700">orchestrator</text>
+            <text x="478" y="163" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="11">reason &middot; route &middot; review</text>
+
+            <use href="#r2" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#ar)"/>
+            <use href="#r3" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#ar)"/>
+            <use href="#r4" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#ar)"/>
+
+            <g font-family="var(--font-body)" font-size="12">
+                <rect x="568" y="74" width="96" height="34" rx="6" fill="none" stroke="var(--green)" stroke-width="1"/><text x="616" y="95" text-anchor="middle" fill="var(--green)">look up ticket</text>
+                <rect x="568" y="133" width="96" height="34" rx="6" fill="none" stroke="var(--green)" stroke-width="1"/><text x="616" y="154" text-anchor="middle" fill="var(--green)">refund charge</text>
+                <rect x="568" y="198" width="96" height="48" rx="6" fill="none" stroke="var(--green)" stroke-width="1"/><text x="616" y="216" text-anchor="middle" fill="var(--green)">summary</text><text x="616" y="234" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">agent via MCP</text>
+            </g>
+
+            <circle class="flow-dot" r="3" fill="var(--accent)" style="offset-path: path('M396 150 L424 150');"/>
+            <circle class="flow-dot" r="3" fill="var(--accent)" style="offset-path: path('M478 124 L566 92'); animation-delay: 0.4s;"/>
+            <circle class="flow-dot" r="3" fill="var(--accent)" style="offset-path: path('M478 150 L566 150'); animation-delay: 0.9s;"/>
+            <circle class="flow-dot" r="3" fill="var(--accent)" style="offset-path: path('M478 168 L566 216'); animation-delay: 1.4s;"/>
+        </svg>
+        <div class="caption">Left: every capability is a sealed bot you must choose between. Right: one router reasons about the goal and calls skills as tools.</div>
+    </div>
+
+    <h2>Why more bots stops scaling</h2>
+    <p>
+        The problem is not the count. It is that each bot is a sealed unit, so three things get
+        worse with every one you add.
+    </p>
+
+    <table>
+        <thead><tr><th>Dimension</th><th>One bot per task</th><th>Skills + orchestrator</th></tr></thead>
+        <tbody>
+            <tr><td>Discovery</td><td>You must know which bot to call before you start</td><td>You state a goal; the router decides</td></tr>
+            <tr><td>Cross-boundary work</td><td>A human stitches steps across bots by hand</td><td>One plan spans skills automatically</td></tr>
+            <tr><td>Reuse</td><td>Each bot reimplements shared capability</td><td>A skill is written once, called by many</td></tr>
+            <tr><td>Adding capability</td><td>One more bot for users to learn</td><td>One more tool the router can pick</td></tr>
+        </tbody>
+    </table>
+
+    <h2>The core idea: skills map to tools</h2>
+    <p>
+        Separate two things the one-bot model fuses together: the <strong>capability</strong> and
+        the <strong>thing that decides when to use it</strong>. A skill is a scoped capability with
+        its own instructions, context, and allowed tools. It does one job and knows nothing about
+        routing. The orchestrator is the only component that reasons about intent, and it sees every
+        skill as just another callable tool.
+    </p>
+
+    <div class="callout">
+        <div class="label">The shift</div>
+        <p>Old: a user picks a bot, then the bot tries to do everything.</p>
+        <p>New: a user states a goal, and the orchestrator picks skills the way an agent picks tools.</p>
+    </div>
+
+    <h2>Agents as tools, via MCP</h2>
+    <p>
+        Here is the piece that makes this compose instead of collapsing back into sprawl. A skill
+        does not have to be a simple function. It can itself be an agent. The Model Context Protocol
+        (MCP) gives a standard way to publish a capability and its contract, so an agent wrapped
+        behind an MCP server becomes a tool any other agent can call through the same uniform
+        interface. The caller never knows whether the thing it called was one function or a
+        multi-step agent of its own.
+    </p>
+
+    <div class="figure">
+        <svg viewBox="0 0 680 220" role="img" aria-label="A skill exposed as a tool is itself an agent calling its own tools via MCP">
+            <defs>
+                <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            </defs>
+            <rect x="40" y="84" width="120" height="52" rx="8" fill="none" stroke="var(--purple)" stroke-width="1.2"/>
+            <text x="100" y="106" text-anchor="middle" fill="var(--purple)" font-family="var(--font-body)" font-size="13" font-weight="700">orchestrator</text>
+            <text x="100" y="123" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="11">calls a tool</text>
+
+            <line x1="160" y1="110" x2="232" y2="110" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#ar2)"/>
+            <text x="196" y="100" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="11">MCP</text>
+
+            <rect x="234" y="70" width="200" height="80" rx="10" fill="none" stroke="var(--green)" stroke-width="1.2" stroke-dasharray="5 4"/>
+            <text x="334" y="92" text-anchor="middle" fill="var(--green)" font-family="var(--font-body)" font-size="13" font-weight="700">summary skill</text>
+            <text x="334" y="109" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="11">looks like a tool, is an agent</text>
+
+            <g font-family="var(--font-body)" font-size="11">
+                <rect x="252" y="118" width="78" height="22" rx="5" fill="none" stroke="var(--text-muted)" stroke-width="0.8"/><text x="291" y="133" text-anchor="middle" fill="var(--text-muted)">read account</text>
+                <rect x="338" y="118" width="82" height="22" rx="5" fill="none" stroke="var(--text-muted)" stroke-width="0.8"/><text x="379" y="133" text-anchor="middle" fill="var(--text-muted)">read activity</text>
+            </g>
+
+            <line x1="434" y1="110" x2="506" y2="110" stroke="var(--accent)" stroke-width="1.2" marker-end="url(#ar2)"/>
+            <rect x="508" y="84" width="132" height="52" rx="8" fill="none" stroke="var(--purple)" stroke-width="1.2"/>
+            <text x="574" y="106" text-anchor="middle" fill="var(--purple)" font-family="var(--font-body)" font-size="13" font-weight="700">result</text>
+            <text x="574" y="123" text-anchor="middle" fill="var(--text-muted)" font-family="var(--font-body)" font-size="11">one clean answer</text>
+        </svg>
+        <div class="caption">To the orchestrator it is one tool call. Behind the MCP boundary, the skill runs its own multi-step agent.</div>
+    </div>
+
+    <p>
+        That single property is what turns a flat list of skills into a layered system. A high-level
+        skill can be built from lower-level skills without any of them knowing the others' internals.
+    </p>
+
+    <h2>How the orchestrator routes</h2>
+    <p>
+        With skills as tools, the top-level agent's job gets small: <strong>reason</strong> about the
+        goal and break it into steps, <strong>route</strong> by calling skills as tools in sequence or
+        in parallel, and <strong>review</strong> the results to decide whether to finish or take another
+        step. The review step is also the natural place to put a human in the loop: pause before a
+        consequential action, get approval, then continue with the same shared state.
+    </p>
+
+    <h2>The tradeoffs, honestly</h2>
+    <p>
+        This pattern is not free, and it is the wrong choice for a handful of unrelated automations.
+        Where it costs you, and how to keep each cost in check:
+    </p>
+
+    <table>
+        <thead><tr><th>Cost</th><th>Why it happens</th><th>How to manage it</th></tr></thead>
+        <tbody>
+            <tr><td>Added latency</td><td>Nested model calls when a skill is itself an agent</td><td>Keep hot paths shallow; cache; skip the router for known single tasks</td></tr>
+            <tr><td>Harder tracing</td><td>One request fans out across several skills</td><td>Trace across the whole graph from day one, not bolted on later</td></tr>
+            <tr><td>Routing errors</td><td>The orchestrator is a model making a choice</td><td>Strong tool descriptions and a review step before actions</td></tr>
+            <tr><td>Shared state</td><td>Skills toward one goal need a consistent view</td><td>Model state deliberately instead of hiding it in one bot</td></tr>
+        </tbody>
+    </table>
+
+    <h2>When not to do this</h2>
+    <p>
+        If you have a few unrelated automations and no cross-boundary pain, you do not need an
+        orchestrator. The one-bot model is simpler and faster, and simpler wins until it stops
+        working. Reach for orchestration when the symptoms are real: users asking which bot to use,
+        requests no single bot can finish, and the same capability built in three places.
+    </p>
+
+    <h2>Takeaways</h2>
+    <ul>
+        <li>Bot sprawl is an architecture ceiling, not an effort problem.</li>
+        <li>Separate capability from routing: a skill is a scoped capability exposed as a tool.</li>
+        <li>Use MCP to expose agents as tools. That is what lets skills compose into layers.</li>
+        <li>Keep the orchestrator thin: reason, route, review, with human approval at the review step.</li>
+        <li>Adopt the pattern when the symptoms are real, not before.</li>
+    </ul>
+
+    <div class="footer-cta">
+        <p>
+            A working reference implementation of this pattern is in progress. Follow along at
+            <a href="https://arnabksarkar.github.io/">arnabksarkar.github.io</a> or connect on
+            <a href="https://www.linkedin.com/in/arnab-karsarkar-sw16yr/">LinkedIn</a>.
+        </p>
+    </div>
+</article>
+
+<footer>
+    &copy; 2026 Arnab KarSarkar &middot;
+    <a href="https://arnabksarkar.github.io/">Home</a> &middot;
+    <a href="https://github.com/arnabksarkar">GitHub</a> &middot;
+    <a href="https://www.linkedin.com/in/arnab-karsarkar-sw16yr/">LinkedIn</a>
+</footer>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isLight = html.classList.toggle('light');
+        const moon = document.querySelector('.icon-moon');
+        const sun = document.querySelector('.icon-sun');
+        if (moon && sun) { moon.style.display = isLight ? 'none' : 'block'; sun.style.display = isLight ? 'block' : 'none'; }
+        try { sessionStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch(e) {}
+    }
+    try {
+        if (sessionStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('light');
+            document.querySelector('.icon-moon').style.display = 'none';
+            document.querySelector('.icon-sun').style.display = 'block';
+        }
+    } catch(e) {}
+</script>
+
+</body>
+</html>
