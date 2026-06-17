@@ -9,7 +9,35 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
+        /* ─── DEFAULT: WARM CREAM (Anthropic-inspired) ─── */
         :root {
+            --bg: #F5F0EB;
+            --bg-card: #FDFAF7;
+            --bg-card-hover: #F0EBE4;
+            --border: #E0D8D0;
+            --text: #1C1917;
+            --text-muted: #78716C;
+            --accent: #C4533A;
+            --accent-glow: rgba(196, 83, 58, 0.1);
+            --accent-2: #A8432C;
+            --green: #3D7A5A;
+            --nav-bg: rgba(245, 240, 235, 0.88);
+            --nav-mobile-bg: rgba(245, 240, 235, 0.97);
+            --hero-glow: rgba(196, 83, 58, 0.06);
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --photo-shadow: 0 0 0 4px rgba(196, 83, 58, 0.1), 0 8px 32px rgba(0,0,0,0.1);
+            --photo-hover-shadow: 0 0 0 4px rgba(196, 83, 58, 0.2), 0 12px 40px rgba(0,0,0,0.12);
+            --accent-border: rgba(196, 83, 58, 0.2);
+            --accent-border-hover: rgba(196, 83, 58, 0.4);
+            --accent-bg-subtle: rgba(196, 83, 58, 0.07);
+            --font-display: 'Source Serif 4', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, sans-serif;
+        }
+        :root .btn-primary { color: #FFFFFF; }
+
+        /* ─── DARK THEME ─── */
+        html.dark {
             --bg: #0B0F19;
             --bg-card: #131825;
             --bg-card-hover: #1A2035;
@@ -27,31 +55,11 @@
             --card-hover-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             --photo-shadow: 0 0 40px rgba(79, 195, 247, 0.15), 0 8px 32px rgba(0,0,0,0.4);
             --photo-hover-shadow: 0 0 60px rgba(79, 195, 247, 0.15), 0 8px 32px rgba(0,0,0,0.4);
-            --font-display: 'Source Serif 4', Georgia, serif;
-            --font-body: 'DM Sans', -apple-system, sans-serif;
+            --accent-border: rgba(79, 195, 247, 0.2);
+            --accent-border-hover: rgba(79, 195, 247, 0.4);
+            --accent-bg-subtle: rgba(79, 195, 247, 0.08);
         }
-
-        /* ─── LIGHT THEME ─── */
-        html.light {
-            --bg: #FAFBFE;
-            --bg-card: #FFFFFF;
-            --bg-card-hover: #F5F7FF;
-            --border: #E2E8F0;
-            --text: #1A202C;
-            --text-muted: #5A6A85;
-            --accent: #2563EB;
-            --accent-glow: rgba(37, 99, 235, 0.08);
-            --accent-2: #1D4ED8;
-            --green: #16A34A;
-            --nav-bg: rgba(250, 251, 254, 0.9);
-            --nav-mobile-bg: rgba(250, 251, 254, 0.97);
-            --hero-glow: rgba(37, 99, 235, 0.06);
-            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-            --card-hover-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            --photo-shadow: 0 0 40px rgba(37, 99, 235, 0.08), 0 8px 32px rgba(0,0,0,0.1);
-            --photo-hover-shadow: 0 0 60px rgba(37, 99, 235, 0.08), 0 8px 32px rgba(0,0,0,0.15);
-        }
-        html.light .btn-primary { color: #FFFFFF; }
+        html.dark .btn-primary { color: var(--bg); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -170,7 +178,7 @@
             display: inline-block;
             padding: 6px 16px;
             background: var(--accent-glow);
-            border: 1px solid rgba(79, 195, 247, 0.25);
+            border: 1px solid var(--accent-border);
             border-radius: 100px;
             font-size: 0.8rem;
             font-weight: 500;
@@ -297,9 +305,12 @@
             border-radius: 12px;
             padding: 1.5rem;
             transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
         .highlight-card:hover {
-            border-color: rgba(79, 195, 247, 0.3);
+            border-color: var(--accent-border-hover);
             background: var(--bg-card-hover);
             transform: translateY(-2px);
         }
@@ -365,6 +376,9 @@
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
         }
         .project-card::before {
             content: '';
@@ -378,7 +392,7 @@
             transition: opacity 0.35s;
         }
         .project-card:hover {
-            border-color: rgba(79, 195, 247, 0.3);
+            border-color: var(--accent-border-hover);
             background: var(--bg-card-hover);
             transform: translateY(-4px);
             box-shadow: var(--card-hover-shadow);
@@ -388,7 +402,7 @@
             width: 44px;
             height: 44px;
             background: var(--accent-glow);
-            border: 1px solid rgba(79, 195, 247, 0.2);
+            border: 1px solid var(--accent-border);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -437,8 +451,8 @@
         }
         .project-tags span {
             padding: 3px 10px;
-            background: rgba(79, 195, 247, 0.08);
-            border: 1px solid rgba(79, 195, 247, 0.15);
+            background: var(--accent-bg-subtle);
+            border: 1px solid var(--accent-border);
             border-radius: 5px;
             font-size: 0.72rem;
             font-weight: 500;
@@ -449,7 +463,8 @@
             gap: 1rem;
             margin-top: auto;
         }
-        .project-links a {
+        .project-links a,
+        .project-link-label {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -460,60 +475,116 @@
             transition: color 0.25s;
         }
         .project-links a:hover { color: var(--accent); }
+        .project-card:hover .project-link-label { color: var(--accent); }
         .project-links a svg { width: 15px; height: 15px; }
 
         /* ─── WRITING ─── */
-        .writing-preview {
+        .writing-series {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
             overflow: hidden;
-            transition: all 0.3s ease;
         }
-        .writing-preview:hover {
-            border-color: rgba(79, 195, 247, 0.3);
+        .writing-series-header {
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
         }
-        .writing-card-header {
-            padding: 2rem 2.5rem 1.5rem;
-        }
-        .writing-card-header h3 {
+        .writing-series-header h3 {
             font-family: var(--font-display);
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.01em;
         }
-        .writing-card-header p {
+        .writing-series-header p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             line-height: 1.7;
             margin-bottom: 0;
         }
-        .writing-card-header .project-status {
-            margin-bottom: 0.75rem;
+        .writing-series-header .project-status {
+            margin-bottom: 0.6rem;
         }
-        .writing-topics {
+        .article-list {
             display: flex;
             flex-direction: column;
-            border-top: 1px solid var(--border);
         }
-        .writing-topics span,
-        .writing-topics a.topic-link {
-            padding: 12px 2.5rem;
+        .article-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: block;
+            text-decoration: none;
             transition: background 0.2s ease;
+            position: relative;
         }
-        .writing-topics span {
+        .article-item:last-child { border-bottom: none; }
+        .article-item.published { cursor: pointer; }
+        .article-item.published:hover { background: var(--bg-card-hover); }
+        .article-item.coming-soon { cursor: default; opacity: 0.6; }
+        .article-item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+        .article-item.published .article-item-icon {
+            background: rgba(102, 187, 106, 0.12);
+            border: 1px solid rgba(102, 187, 106, 0.25);
+            color: var(--green);
+        }
+        .article-item.coming-soon .article-item-icon {
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border);
             color: var(--text-muted);
         }
-        .writing-topics a.topic-link:hover {
-            background: var(--bg-card-hover);
+        .article-item-body {
+            flex: 1;
+            min-width: 0;
         }
-        .writing-topics span:last-child,
-        .writing-topics a.topic-link:last-child {
-            border-bottom: none;
+        .article-item-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .article-item.coming-soon .article-item-title { color: var(--text-muted); }
+        .article-item-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .article-item.published .article-item-meta { color: var(--green); }
+        .article-item-arrow {
+            color: var(--accent);
+            font-size: 1rem;
+            flex-shrink: 0;
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .article-item.published:hover .article-item-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .article-item-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            background: var(--bg-card-hover);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
         }
 
         /* ─── CONTACT ─── */
@@ -549,7 +620,7 @@
             transition: all 0.3s ease;
         }
         .contact-link:hover {
-            border-color: rgba(79, 195, 247, 0.3);
+            border-color: var(--accent-border-hover);
             background: var(--bg-card-hover);
             transform: translateX(6px);
         }
@@ -650,13 +721,13 @@
             fill: var(--bg);
             transition: fill 0.3s;
         }
-        html.light .theme-toggle-knob {
+        html.dark .theme-toggle-knob {
             transform: translateX(20px);
         }
 
         /* ─── SMOOTH THEME TRANSITION ─── */
         body, nav, .project-card, .highlight-card, .contact-link,
-        .hero-photo, .btn, .footer-socials a, .tech-tag, .writing-preview {
+        .hero-photo, .btn, .footer-socials a, .tech-tag, .writing-series {
             transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
         }
 
@@ -694,16 +765,6 @@
             .hero { padding: 8rem 1.5rem 4rem; }
             section { padding: 4rem 1.5rem; }
             .footer-inner { flex-direction: column; gap: 1.5rem; text-align: center; }
-        }
-        a.topic-link {
-            color: var(--accent);
-            text-decoration: none;
-        }
-        a.topic-link:hover {
-            text-decoration: none;
-        }
-        a.topic-link.published {
-            color: var(--green);
         }
     </style>
 </head>
@@ -810,11 +871,11 @@
                 </div>
             </div>
             <div class="about-highlights fade-in" style="transition-delay: 0.15s">
-                <div class="highlight-card">
-                    <div class="label">Current Focus</div>
+                <a class="highlight-card" href="/blogs/multi-agent-orchestration.html">
+                    <div class="label">Current Focus ↗</div>
                     <div class="value">Multi-Agent Orchestration</div>
                     <div class="desc">A skills-based orchestration architecture where skills map to tools and any agent can be exposed as a tool to another via MCP — one action-taking agent instead of hundreds of point bots. Adopted company-wide at Okta.</div>
-                </div>
+                </a>
                 <div class="highlight-card">
                     <div class="label">Career Trajectory</div>
                     <div class="value">Senior → Architect in 5 Years</div>
@@ -847,7 +908,7 @@
         <div class="projects-grid">
 
             <!-- Project 1: PrivacyFirewall -->
-            <div class="project-card fade-in">
+            <a class="project-card fade-in" href="https://github.com/privacyshield-ai/privacy-firewall" target="_blank" rel="noopener">
                 <div class="project-icon">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
@@ -856,8 +917,8 @@
                 </div>
                 <h3>PrivacyFirewall</h3>
                 <p>
-                    A local-first AI-powered DLP solution that blocks PII and secrets 
-                    before they reach ChatGPT, Claude, or Gemini. Regex + on-device 
+                    A local-first AI-powered DLP solution that blocks PII and secrets
+                    before they reach ChatGPT, Claude, or Gemini. Regex + on-device
                     Transformer NER detection. No data ever leaves your machine.
                 </p>
                 <div class="project-tags">
@@ -868,15 +929,15 @@
                     <span>DLP</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/privacyshield-ai/privacy-firewall" target="_blank" rel="noopener">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    <span class="project-link-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;vertical-align:middle;margin-right:4px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
                         GitHub
-                    </a>
+                    </span>
                 </div>
-            </div>
+            </a>
 
             <!-- Project 2: Enterprise RAG -->
-            <div class="project-card fade-in" style="transition-delay: 0.1s">
+            <a class="project-card fade-in" href="https://github.com/arnabksarkar/enterprise-rag-series" target="_blank" rel="noopener" style="transition-delay: 0.1s">
                 <div class="project-icon">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                 </div>
@@ -885,8 +946,8 @@
                 </div>
                 <h3>Enterprise RAG at Scale</h3>
                 <p>
-                    A reference architecture for production-grade RAG with ACL-based 
-                    retrieval, multi-source ingestion, and retrieval quality evaluation. 
+                    A reference architecture for production-grade RAG with ACL-based
+                    retrieval, multi-source ingestion, and retrieval quality evaluation.
                     Solving the problems that break RAG beyond the POC.
                 </p>
                 <div class="project-tags">
@@ -896,16 +957,16 @@
                     <span>LangChain</span>
                     <span>Python</span>
                 </div>
-                 <div class="project-links">
-                    <a href="https://github.com/arnabksarkar/enterprise-rag-series" target="_blank" rel="noopener">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                <div class="project-links">
+                    <span class="project-link-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;vertical-align:middle;margin-right:4px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
                         GitHub (In Progress)
-                    </a>
+                    </span>
                 </div>
-            </div>
+            </a>
 
             <!-- Project 3: Multi-Agent Orchestrator -->
-            <div class="project-card fade-in" style="transition-delay: 0.2s">
+            <a class="project-card fade-in" href="/blogs/multi-agent-orchestration.html" style="transition-delay: 0.2s">
                 <div class="project-icon">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                 </div>
@@ -914,11 +975,10 @@
                 </div>
                 <h3>Skills-Based Multi-Agent Orchestrator</h3>
                 <p>
-                    A production multi-agent orchestration system where reusable Skills map 
-                    to tools and any agent can be exposed as a tool to another via MCP. An 
-                    orchestrator routes work across a reasoner, skill executor, and reviewer, 
-                    with human-in-the-loop interrupts and shared state. Open-source reference 
-                    implementation in progress.
+                    A production multi-agent orchestration system where reusable Skills map
+                    to tools and any agent can be exposed as a tool to another via MCP. An
+                    orchestrator routes work across a reasoner, skill executor, and reviewer,
+                    with human-in-the-loop interrupts and shared state.
                 </p>
                 <div class="project-tags">
                     <span>LangGraph</span>
@@ -928,15 +988,15 @@
                     <span>State Management</span>
                 </div>
                 <div class="project-links">
-                    <a href="#" style="opacity: 0.5; pointer-events: none;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        Reference impl — coming soon
-                    </a>
+                    <span class="project-link-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;vertical-align:middle;margin-right:4px;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                        Read the article
+                    </span>
                 </div>
-            </div>
+            </a>
 
             <!-- Project 4: D3 Visualization -->
-            <div class="project-card fade-in" style="transition-delay: 0.3s">
+            <a class="project-card fade-in" href="projects/life-expectancy/" target="_blank" style="transition-delay: 0.3s">
                 <div class="project-icon">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                 </div>
@@ -945,8 +1005,8 @@
                 </div>
                 <h3>Life Expectancy vs Population</h3>
                 <p>
-                    An interactive narrative visualization exploring the relationship 
-                    between life expectancy and population across countries from 2007–2017. 
+                    An interactive narrative visualization exploring the relationship
+                    between life expectancy and population across countries from 2007–2017.
                     Built as a three-scene storytelling experience with D3.js.
                 </p>
                 <div class="project-tags">
@@ -956,75 +1016,97 @@
                     <span>Narrative Viz</span>
                 </div>
                 <div class="project-links">
-                    <a href="projects/life-expectancy/" target="_blank">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    <span class="project-link-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:middle;margin-right:4px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                         Live Demo
-                    </a>
+                    </span>
                 </div>
-            </div>
+            </a>
 
         </div>
 
-        <!-- Writing Series Preview -->
         <!-- Writing Section -->
-    <div style="margin-top: 4rem;" class="fade-in">
-        <span class="section-label">Writing</span>
-        <h2 class="section-title" style="margin-bottom: 2rem;">Ideas I'm exploring.</h2>
+        <div style="margin-top: 4rem;" class="fade-in">
+            <span class="section-label">Writing</span>
+            <h2 class="section-title" style="margin-bottom: 2rem;">Ideas I'm exploring.</h2>
 
-        <!-- Series Card: Enterprise RAG -->
-        <div class="writing-preview" id="rag-series">
-            <div class="writing-card-header">
-                <div class="project-status status-live">
-                    <span class="status-dot"></span> In Progress — 1 of 5 Published
-                </div>
-                <h3>Enterprise RAG: What Breaks at Scale</h3>
-                <p>
-                    A multi-part deep dive into the real problems that kill RAG systems in production — 
-                    with architecture diagrams and companion Jupyter notebooks. Each post tackles a 
-                    specific failure mode and shows how to solve it properly.
-                </p>
-            </div>
-                <div class="writing-topics">
-                    <a href="/blogs/rag-part1.html" class="topic-link published">Part 1: The Right Chunk, Wrong Context Problem ✓</a>
-                    <span>Part 2: ACL & Permissions at Query Time</span>
-                    <span>Part 3: Chunking Strategies Across Doc Types</span>
-                    <span>Part 4: Stale Content & Freshness</span>
-                    <span>Part 5: Evaluation & Observability</span>
-                </div>
-        </div> 
-        
-        <div class="writing-preview" id="orchestrator" style="margin-top: 4rem;">
-            <div class="writing-card-header">
-                <div class="project-status status-live">
-                    <span class="status-dot"></span> In Progress 
-                </div>
-                <h3>From Hundreds of Bots to One Orchestrator</h3>
-                <p>
-                    Why one-bot-per-task automation collapses into sprawl, and the skills-based orchestration pattern that replaces it. 
-                    How skills map to tools, agents become tools via MCP, and one thin orchestrator routes the work.
-                </p>
-            </div>
-                <div class="writing-topics">
-                    <a href="/blogs/multi-agent-orchestration.html" class="topic-link published">The One Orchestrator Story✓</a>
-                </div>
-        </div>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-
-        <!-- 
-        <div class="writing-preview" id="agents-series" style="margin-top: 1.5rem;">
-            <div class="writing-card-header">
-                <div class="project-status status-soon">
-                    <span class="status-dot"></span> Coming Soon
+                <!-- Series: Enterprise RAG -->
+                <div class="writing-series" id="rag-series">
+                    <div class="writing-series-header">
+                        <div class="project-status status-live">
+                            <span class="status-dot"></span> In Progress — 1 of 5 Published
+                        </div>
+                        <h3>Enterprise RAG: What Breaks at Scale</h3>
+                        <p>A multi-part deep dive into the real problems that kill RAG systems in production — with architecture diagrams and companion notebooks. Each post tackles a specific failure mode.</p>
+                    </div>
+                    <div class="article-list">
+                        <a href="/blogs/rag-part1.html" class="article-item published">
+                            <div class="article-item-icon">✓</div>
+                            <div class="article-item-body">
+                                <div class="article-item-title">Part 1: The Right Chunk, Wrong Context Problem</div>
+                                <div class="article-item-meta">Published</div>
+                            </div>
+                            <span class="article-item-arrow">→</span>
+                        </a>
+                        <div class="article-item coming-soon">
+                            <div class="article-item-icon">2</div>
+                            <div class="article-item-body">
+                                <div class="article-item-title">Part 2: ACL & Permissions at Query Time</div>
+                                <div class="article-item-meta">Coming soon</div>
+                            </div>
+                            <span class="article-item-badge">Soon</span>
+                        </div>
+                        <div class="article-item coming-soon">
+                            <div class="article-item-icon">3</div>
+                            <div class="article-item-body">
+                                <div class="article-item-title">Part 3: Chunking Strategies Across Doc Types</div>
+                                <div class="article-item-meta">Coming soon</div>
+                            </div>
+                            <span class="article-item-badge">Soon</span>
+                        </div>
+                        <div class="article-item coming-soon">
+                            <div class="article-item-icon">4</div>
+                            <div class="article-item-body">
+                                <div class="article-item-title">Part 4: Stale Content & Freshness</div>
+                                <div class="article-item-meta">Coming soon</div>
+                            </div>
+                            <span class="article-item-badge">Soon</span>
+                        </div>
+                        <div class="article-item coming-soon">
+                            <div class="article-item-icon">5</div>
+                            <div class="article-item-body">
+                                <div class="article-item-title">Part 5: Evaluation & Observability</div>
+                                <div class="article-item-meta">Coming soon</div>
+                            </div>
+                            <span class="article-item-badge">Soon</span>
+                        </div>
+                    </div>
                 </div>
-                <h3>Multi-Agent Patterns That Actually Work</h3>
-                <p>Lessons from building production agent systems...</p>
+
+                <!-- Series: Multi-Agent Orchestration -->
+                <div class="writing-series" id="orchestrator">
+                    <div class="writing-series-header">
+                        <div class="project-status status-live">
+                            <span class="status-dot"></span> In Progress
+                        </div>
+                        <h3>From Hundreds of Bots to One Orchestrator</h3>
+                        <p>Why one-bot-per-task automation collapses into sprawl, and the skills-based orchestration pattern that replaces it. How skills map to tools, agents become tools via MCP, and one thin orchestrator routes the work.</p>
+                    </div>
+                    <div class="article-list">
+                        <a href="/blogs/multi-agent-orchestration.html" class="article-item published">
+                            <div class="article-item-icon">✓</div>
+                            <div class="article-item-body">
+                                <div class="article-item-title">The One Orchestrator Story</div>
+                                <div class="article-item-meta">Published</div>
+                            </div>
+                            <span class="article-item-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+
             </div>
-            <div class="writing-topics">
-                <span>Part 1: Why Most Agent Demos Fail in Production</span>
-                <span>Part 2: State Management Across Agent Handoffs</span>
-            </div>
-        </div>
-        -->
         </div>
     </div>
 </section>
@@ -1119,28 +1201,29 @@
     // ─── THEME TOGGLE ───
     function toggleTheme() {
         const html = document.documentElement;
-        const isLight = html.classList.toggle('light');
-        updateToggleIcons(isLight);
-        // Remember preference in URL hash (no localStorage needed)
-        try { sessionStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch(e) {}
+        const isDark = html.classList.toggle('dark');
+        updateToggleIcons(isDark);
+        try { sessionStorage.setItem('theme', isDark ? 'dark' : 'warm'); } catch(e) {}
     }
 
-    function updateToggleIcons(isLight) {
+    function updateToggleIcons(isDark) {
         const moon = document.querySelector('.icon-moon');
         const sun = document.querySelector('.icon-sun');
         if (moon && sun) {
-            moon.style.display = isLight ? 'none' : 'block';
-            sun.style.display = isLight ? 'block' : 'none';
+            moon.style.display = isDark ? 'block' : 'none';
+            sun.style.display = isDark ? 'none' : 'block';
         }
     }
 
     // Check saved preference on load
     try {
-        if (sessionStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.add('light');
+        if (sessionStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
             updateToggleIcons(true);
+        } else {
+            updateToggleIcons(false);
         }
-    } catch(e) {}
+    } catch(e) { updateToggleIcons(false); }
 
     // ─── SCROLL ANIMATIONS ───
     const observer = new IntersectionObserver((entries) => {
