@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arnab KarSarkar — AI Architect</title>
-    <meta name="description" content="AI Architect building production-grade multi-agent systems and enterprise RAG at scale. 16+ years of enterprise software experience.">
+    <meta name="description" content="AI Architect building production multi-agent systems, enterprise RAG, and agent authorization at scale. First AI engineer at Okta. 16+ years of enterprise software experience.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -805,13 +805,13 @@
 <!-- ─── HERO ─── -->
 <section class="hero">
     <div class="hero-content fade-in">
-        <img src="arnab_photo.png" alt="Arnab KarSarkar" class="hero-photo">
+        <img src="oktane_pic1.jpeg" alt="Arnab KarSarkar" class="hero-photo">
         <div class="hero-badge">AI Architect at Okta</div>
         <h1>Arnab <span class="accent">KarSarkar</span></h1>
         <p class="hero-subtitle">
-            I build production-grade multi-agent systems and enterprise RAG platforms. 
-            First AI engineer at Okta — 16+ years turning complex business problems into 
-            scalable AI architectures that survive past the demo.
+            I build production multi-agent systems, enterprise RAG platforms, and the
+            authorization layers that keep them safe. First AI engineer at Okta — 16+ years
+            turning complex business problems into architectures that survive past the demo.
         </p>
         <div class="hero-links">
             <a href="#projects" class="btn btn-primary">
@@ -846,10 +846,18 @@
                     hands-on through pairing, architecture reviews, and internal enablement.
                 </p>
                 <p>
-                    Before the AI wave, I spent 12+ years building the distributed, event-driven, 
-                    and data-intensive systems that make production AI possible: high-volume data 
-                    pipelines, secure identity platforms, and full-stack enterprise applications 
-                    serving thousands of users.
+                    Before the AI wave, I spent 12+ years building the distributed, event-driven,
+                    and data-intensive systems that make production AI possible — multi-million-record
+                    pipelines on Spark and BigQuery, secure identity platforms, and stream-based APIs
+                    serving thousands of users. That foundation shows up in the AI work: the
+                    orchestrator's routing layer runs a deterministic embedding fast path at p50 under
+                    10ms, with LLM routing only as fallback.
+                </p>
+                <p>
+                    Increasingly my focus is where agents meet <strong>security</strong> — delegated
+                    authority, execution boundaries, and what an agent is allowed to do once you
+                    assume it can be manipulated. Building AI inside an identity company made that
+                    unavoidable, and I think it's the problem the field has least figured out.
                 </p>
                 <p>
                     I hold a <strong>Master's in Computer Science</strong> from the 
@@ -859,6 +867,10 @@
                     <span class="tech-tag">LangGraph</span>
                     <span class="tech-tag">Multi-Agent Systems</span>
                     <span class="tech-tag">MCP</span>
+                    <span class="tech-tag">Agent Authorization</span>
+                    <span class="tech-tag">Trust Boundaries</span>
+                    <span class="tech-tag">OAuth / Token Exchange</span>
+                    <span class="tech-tag">Prompt Injection Defense</span>
                     <span class="tech-tag">RAG</span>
                     <span class="tech-tag">LLM Gateway</span>
                     <span class="tech-tag">AWS Bedrock</span>
@@ -871,8 +883,13 @@
                 </div>
             </div>
             <div class="about-highlights fade-in" style="transition-delay: 0.15s">
-                <a class="highlight-card" href="/blogs/multi-agent-orchestration.html">
+                <a class="highlight-card" href="/blogs/agent-authorization.html">
                     <div class="label">Current Focus ↗</div>
+                    <div class="value">Agent Authorization</div>
+                    <div class="desc">An enterprise layer governing how AI agents reach enterprise APIs: delegated authority, execution boundaries, before-tool-call guardrails, and approval flows for high-risk writes — every action attributable to both the agent and the human behind it.</div>
+                </a>
+                <a class="highlight-card" href="/blogs/multi-agent-orchestration.html">
+                    <div class="label">Also Building ↗</div>
                     <div class="value">Multi-Agent Orchestration</div>
                     <div class="desc">A skills-based orchestration architecture where skills map to tools and any agent can be exposed as a tool to another via MCP — one action-taking agent instead of hundreds of point bots. Adopted company-wide at Okta.</div>
                 </a>
@@ -906,6 +923,67 @@
         </p>
 
         <div class="projects-grid">
+
+            <!-- Project: Agent Authorization -->
+            <a class="project-card fade-in" href="/blogs/agent-authorization.html">
+                <div class="project-icon">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div class="project-status status-live">
+                    <span class="status-dot"></span> In Production at Okta
+                </div>
+                <h3>Agent Authorization &amp; Execution Boundaries</h3>
+                <p>
+                    An enterprise layer governing how AI agents reach enterprise APIs: credential
+                    vaulting, before-tool-call guardrails, and approval flows for high-risk writes.
+                    Agents act with the intersection of delegated user authority and their own
+                    provisioned scope — every action attributable to both the agent and the human
+                    behind it.
+                </p>
+                <div class="project-tags">
+                    <span>Agent Security</span>
+                    <span>OAuth / Token Exchange</span>
+                    <span>Trust Boundaries</span>
+                    <span>Human-in-the-Loop</span>
+                    <span>Auditability</span>
+                </div>
+                <div class="project-links">
+                    <span class="project-link-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;vertical-align:middle;margin-right:4px;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                        Read the article
+                    </span>
+                </div>
+            </a>
+
+            <!-- Project: Multi-Agent Orchestrator -->
+            <a class="project-card fade-in" href="/blogs/multi-agent-orchestration.html">
+                <div class="project-icon">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <div class="project-status status-live">
+                    <span class="status-dot"></span> In Production at Okta
+                </div>
+                <h3>Skills-Based Multi-Agent Orchestrator</h3>
+                <p>
+                    A production multi-agent orchestration system where reusable Skills map
+                    to tools and any agent can be exposed as a tool to another via MCP. An
+                    orchestrator routes work across a reasoner, skill executor, and reviewer,
+                    with human-in-the-loop interrupts and shared state.
+                </p>
+                <div class="project-tags">
+                    <span>LangGraph</span>
+                    <span>Multi-Agent</span>
+                    <span>MCP</span>
+                    <span>Python</span>
+                    <span>State Management</span>
+                </div>
+                <div class="project-links">
+                    <span class="project-link-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;vertical-align:middle;margin-right:4px;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                        Read the article
+                    </span>
+                </div>
+            </a>
 
             <!-- Project 1: PrivacyFirewall -->
             <a class="project-card fade-in" href="https://github.com/privacyshield-ai/privacy-firewall" target="_blank" rel="noopener">
@@ -965,36 +1043,6 @@
                 </div>
             </a>
 
-            <!-- Project 3: Multi-Agent Orchestrator -->
-            <a class="project-card fade-in" href="/blogs/multi-agent-orchestration.html" style="transition-delay: 0.2s">
-                <div class="project-icon">
-                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                </div>
-                <div class="project-status status-live">
-                    <span class="status-dot"></span> In Production at Okta
-                </div>
-                <h3>Skills-Based Multi-Agent Orchestrator</h3>
-                <p>
-                    A production multi-agent orchestration system where reusable Skills map
-                    to tools and any agent can be exposed as a tool to another via MCP. An
-                    orchestrator routes work across a reasoner, skill executor, and reviewer,
-                    with human-in-the-loop interrupts and shared state.
-                </p>
-                <div class="project-tags">
-                    <span>LangGraph</span>
-                    <span>Multi-Agent</span>
-                    <span>MCP</span>
-                    <span>Python</span>
-                    <span>State Management</span>
-                </div>
-                <div class="project-links">
-                    <span class="project-link-label">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;vertical-align:middle;margin-right:4px;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-                        Read the article
-                    </span>
-                </div>
-            </a>
-
             <!-- Project 4: D3 Visualization -->
             <a class="project-card fade-in" href="projects/life-expectancy/" target="_blank" style="transition-delay: 0.3s">
                 <div class="project-icon">
@@ -1032,11 +1080,32 @@
 
             <div style="display: flex; flex-direction: column; gap: 1.5rem;">
 
+                <!-- Series: Agent Security -->
+                <div class="writing-series" id="agent-security">
+                    <div class="writing-series-header">
+                        <div class="project-status status-live">
+                            <span class="status-dot"></span> New
+                        </div>
+                        <h3>Securing Agentic Systems</h3>
+                        <p>What changes when software starts acting on your behalf. Delegated authority, trust boundaries, and designing for the case where the agent has already been manipulated.</p>
+                    </div>
+                    <div class="article-list">
+                        <a href="/blogs/agent-authorization.html" class="article-item published">
+                            <div class="article-item-icon">✓</div>
+                            <div class="article-item-body">
+                                <div class="article-item-title">Who Is the Agent Acting For?</div>
+                                <div class="article-item-meta">Published</div>
+                            </div>
+                            <span class="article-item-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Series: Enterprise RAG -->
                 <div class="writing-series" id="rag-series">
                     <div class="writing-series-header">
                         <div class="project-status status-live">
-                            <span class="status-dot"></span> In Progress — 1 of 5 Published
+                            <span class="status-dot"></span> Part 1 published
                         </div>
                         <h3>Enterprise RAG: What Breaks at Scale</h3>
                         <p>A multi-part deep dive into the real problems that kill RAG systems in production — with architecture diagrams and companion notebooks. Each post tackles a specific failure mode.</p>
@@ -1053,34 +1122,10 @@
                         <div class="article-item coming-soon">
                             <div class="article-item-icon">2</div>
                             <div class="article-item-body">
-                                <div class="article-item-title">Part 2: ACL & Permissions at Query Time</div>
-                                <div class="article-item-meta">Coming soon</div>
+                                <div class="article-item-title">Part 2: ACL &amp; Permissions at Query Time</div>
+                                <div class="article-item-meta">In progress</div>
                             </div>
-                            <span class="article-item-badge">Soon</span>
-                        </div>
-                        <div class="article-item coming-soon">
-                            <div class="article-item-icon">3</div>
-                            <div class="article-item-body">
-                                <div class="article-item-title">Part 3: Chunking Strategies Across Doc Types</div>
-                                <div class="article-item-meta">Coming soon</div>
-                            </div>
-                            <span class="article-item-badge">Soon</span>
-                        </div>
-                        <div class="article-item coming-soon">
-                            <div class="article-item-icon">4</div>
-                            <div class="article-item-body">
-                                <div class="article-item-title">Part 4: Stale Content & Freshness</div>
-                                <div class="article-item-meta">Coming soon</div>
-                            </div>
-                            <span class="article-item-badge">Soon</span>
-                        </div>
-                        <div class="article-item coming-soon">
-                            <div class="article-item-icon">5</div>
-                            <div class="article-item-body">
-                                <div class="article-item-title">Part 5: Evaluation & Observability</div>
-                                <div class="article-item-meta">Coming soon</div>
-                            </div>
-                            <span class="article-item-badge">Soon</span>
+                            <span class="article-item-badge">Next</span>
                         </div>
                     </div>
                 </div>
@@ -1123,15 +1168,8 @@
                     or figuring out how to make RAG work beyond the demo — I'm always happy 
                     to connect and share ideas.
                 </p>
-                <!-- 
-                    ============================================================
-                    RESUME BUTTON — Currently hidden. 
-                    To enable: remove 'style="display:none;"' below
-                    and replace '#' with your resume PDF filename.
-                    ============================================================
-                -->
-                <div class="resume-btn-wrapper" style="display:none;">
-                    <a href="#" class="btn btn-primary" style="margin-top: 1rem;">
+                <div class="resume-btn-wrapper">
+                    <a href="/Arnab_Kar_Sarkar_Resume.pdf" class="btn btn-primary" style="margin-top: 1rem;" target="_blank" rel="noopener">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         Download Resume
                     </a>

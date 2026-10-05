@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who Is the Agent Acting For? — Arnab KarSarkar</title>
+    <meta name="description" content="Agents break the assumption every authorization system was built on: that a request has one human behind it. A look at trust boundaries, delegated authority, and designing for the case where the agent is already compromised.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F5F0EB;
+            --bg-card: #FDFAF7;
+            --bg-card-hover: #F0EBE4;
+            --border: #E0D8D0;
+            --text: #1C1917;
+            --text-muted: #78716C;
+            --accent: #C4533A;
+            --accent-glow: rgba(196, 83, 58, 0.1);
+            --accent-2: #A8432C;
+            --green: #3D7A5A;
+            --nav-bg: rgba(245, 240, 235, 0.88);
+            --accent-border: rgba(196, 83, 58, 0.2);
+            --accent-bg-subtle: rgba(196, 83, 58, 0.07);
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --font-display: 'Source Serif 4', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, sans-serif;
+        }
+        html.dark {
+            --bg: #0B0F19;
+            --bg-card: #131825;
+            --bg-card-hover: #1A2035;
+            --border: #1E2A3A;
+            --text: #E2E8F0;
+            --text-muted: #8B9DC3;
+            --accent: #4FC3F7;
+            --accent-glow: rgba(79, 195, 247, 0.15);
+            --accent-2: #81D4FA;
+            --green: #66BB6A;
+            --nav-bg: rgba(11, 15, 25, 0.85);
+            --accent-border: rgba(79, 195, 247, 0.2);
+            --accent-bg-subtle: rgba(79, 195, 247, 0.08);
+            --card-shadow: 0 0 0 transparent;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            max-width: 1100px; margin: 0 auto; padding: 0 2rem;
+            display: flex; justify-content: space-between; align-items: center; height: 64px;
+        }
+        .nav-logo {
+            font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+            color: var(--text); text-decoration: none; letter-spacing: -0.02em;
+        }
+        .nav-logo span { color: var(--accent); }
+        .nav-back {
+            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+            display: inline-flex; align-items: center; gap: 6px; transition: color 0.25s;
+        }
+        .nav-back:hover { color: var(--accent); }
+
+        .theme-toggle {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 50px;
+            width: 44px; height: 24px; cursor: pointer; position: relative;
+            transition: all 0.3s ease; display: flex; align-items: center; padding: 0 3px;
+            margin-left: 1rem; flex-shrink: 0;
+        }
+        .theme-toggle:hover { border-color: var(--accent); }
+        .theme-toggle-knob {
+            width: 18px; height: 18px; border-radius: 50%; background: var(--accent);
+            transition: transform 0.3s ease; display: flex; align-items: center; justify-content: center;
+        }
+        .theme-toggle-knob svg { width: 11px; height: 11px; fill: var(--bg); }
+        html.dark .theme-toggle-knob { transform: translateX(20px); }
+
+        .article {
+            max-width: 720px; margin: 0 auto; padding: 8rem 2rem 6rem;
+        }
+        .article-eyebrow {
+            display: inline-block; font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        .article h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 2.9rem);
+            font-weight: 700; line-height: 1.2; letter-spacing: -0.025em;
+            margin-bottom: 1.25rem;
+        }
+        .article-standfirst {
+            font-size: 1.15rem; color: var(--text-muted); line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        .article-meta {
+            font-size: 0.85rem; color: var(--text-muted);
+            padding-bottom: 2.5rem; border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+        .article h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem; font-weight: 700; letter-spacing: -0.015em;
+            margin: 3rem 0 1rem;
+        }
+        .article h3 {
+            font-family: var(--font-display);
+            font-size: 1.2rem; font-weight: 600;
+            margin: 2rem 0 0.75rem;
+        }
+        .article p {
+            margin-bottom: 1.3rem; font-size: 1.02rem; color: var(--text);
+        }
+        .article ul, .article ol { margin: 0 0 1.4rem 1.3rem; }
+        .article li { margin-bottom: 0.6rem; font-size: 1.02rem; }
+        .article strong { font-weight: 600; }
+        .article a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+        .callout {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 10px; padding: 1.4rem 1.6rem; margin: 2rem 0;
+            box-shadow: var(--card-shadow);
+        }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout .callout-label {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem;
+        }
+
+        .diagram {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.6rem; margin: 2rem 0;
+            overflow-x: auto; box-shadow: var(--card-shadow);
+        }
+        .diagram pre {
+            font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            font-size: 0.82rem; line-height: 1.65; color: var(--text-muted);
+            white-space: pre; margin: 0;
+        }
+        .diagram-caption {
+            font-size: 0.82rem; color: var(--text-muted);
+            margin-top: 1rem; font-style: italic;
+        }
+
+        table {
+            width: 100%; border-collapse: collapse; margin: 2rem 0;
+            font-size: 0.92rem;
+        }
+        th, td {
+            text-align: left; padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border); vertical-align: top;
+        }
+        th {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--accent);
+        }
+
+        .article-footer {
+            margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border);
+        }
+        .article-footer p { color: var(--text-muted); font-size: 0.95rem; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 11px 24px; border-radius: 8px;
+            font-size: 0.88rem; font-weight: 600; text-decoration: none;
+            transition: all 0.3s ease; margin-top: 1rem;
+            background: transparent; color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+        @media (max-width: 768px) {
+            .article { padding: 6rem 1.4rem 4rem; }
+            .diagram pre { font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="../index.html" class="nav-logo">AK<span>.</span></a>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+            <a href="../index.html#projects" class="nav-back">← All writing</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <div class="theme-toggle-knob">
+                    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/></svg>
+                </div>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<article class="article">
+
+    <div class="article-eyebrow">Agent Security · Part 1</div>
+    <h1>Who Is the Agent Acting For?</h1>
+    <p class="article-standfirst">
+        Every authorization system we have was built on an assumption agents quietly break:
+        that behind each request there is one human, and that the system can tell who they are.
+        Once software starts reasoning and calling tools on someone's behalf, that assumption
+        stops holding — and most of the hard problems in agent security follow from it.
+    </p>
+    <div class="article-meta">Arnab KarSarkar</div>
+
+    <p>
+        The demos are easy. An agent reads a ticket, looks up an account, drafts a reply. Nobody
+        asks hard questions at that stage, because nothing it touches matters very much.
+    </p>
+    <p>
+        The questions arrive the first time an agent is allowed to write. Issue the refund, update
+        the record, send the message, revoke the access. At that moment someone has to answer: by
+        what authority did it do that? And when the answer is <em>it had an API key in its config</em>,
+        you don't have an authorization model. You have a service account with a language model
+        attached to it.
+    </p>
+
+    <h2>The confused deputy, with better grammar</h2>
+
+    <p>
+        The underlying pattern is old. A confused deputy is a program with more privilege than the
+        party instructing it, which can be talked into using that privilege on the instructor's behalf.
+        Agents are an unusually good deputy: they hold broad credentials, they take instructions in
+        natural language, and they are built to be helpful.
+    </p>
+    <p>
+        What makes this sharper than the classic case is where the instructions come from. An agent's
+        context is assembled from many sources — the user's request, retrieved documents, tool results,
+        prior turns, memory. To the model, all of it is tokens. There is no structural separation
+        between <em>instructions I should follow</em> and <em>data I should reason about</em>. We
+        have parameterized queries for SQL. We have nothing equivalent here.
+    </p>
+
+    <div class="callout">
+        <div class="callout-label">The practical consequence</div>
+        <p>
+            If the content an agent reads can influence what it does, and the agent can act with
+            real privilege, then anyone who can get text in front of it has partial control of those
+            actions. Filtering helps at the margin. It does not change the shape of the problem.
+        </p>
+    </div>
+
+    <h2>Two answers that don't work</h2>
+
+    <h3>Give the agent its own service account</h3>
+    <p>
+        Simple to build, and it fails in the obvious direction. The account needs union privilege —
+        everything any user of the agent might legitimately need — so every request runs with the
+        permissions of the most privileged person the agent serves. A user who could never read a
+        particular record asks the agent, and the agent happily reads it. The authorization check
+        passed. It was just answering the wrong question.
+    </p>
+
+    <h3>Pass the user's token straight through</h3>
+    <p>
+        Better, and closer to right: now the agent can only reach what the user could reach. But
+        there is no agent-level constraint left. A support agent and a finance agent acting for the
+        same person have identical reach, because the only thing being checked is the human. The
+        agent's own scope — what <em>this</em> agent is supposed to be for — isn't expressed anywhere.
+    </p>
+
+    <h2>Authority as an intersection</h2>
+
+    <p>
+        The model that holds is neither one alone. An agent should act with the intersection of two
+        things: the authority delegated to it by the human it is acting for, and the scope it was
+        provisioned with as an agent.
+    </p>
+
+    <div class="diagram">
+<pre>
+    what the user can do          what this agent is for
+    ────────────────────          ──────────────────────
+    read accounts                 read accounts
+    write accounts                read tickets
+    read tickets                  draft replies
+    approve refunds
+    delete records
+
+                    ∩
+
+            effective authority
+            ───────────────────
+            read accounts
+            read tickets
+</pre>
+        <div class="diagram-caption">
+            Neither the user's permissions nor the agent's provisioned scope is the answer on its own.
+            The effective authority is what both allow.
+        </div>
+    </div>
+
+    <p>
+        This is not a new idea — it is delegation, and identity systems have modelled it for years
+        through token exchange and on-behalf-of flows. What is new is how often it has to happen.
+        A single agent run may touch six systems across several turns, and each of those calls needs
+        to carry the right delegated authority rather than a standing credential that outlives the task.
+    </p>
+    <p>
+        Three properties matter in practice:
+    </p>
+    <ul>
+        <li><strong>Short-lived.</strong> Credentials scoped to a task, not to a deployment. An agent
+        that is idle should not be holding anything useful.</li>
+        <li><strong>Checked at call time.</strong> Not once at session start. The relevant question is
+        whether <em>this</em> action is permitted now, not whether the agent was trusted when it booted.</li>
+        <li><strong>Dually attributable.</strong> Every action should name both the agent and the human
+        it acted for. One without the other makes incidents unresolvable.</li>
+    </ul>
+
+    <h2>Counting the dangerous combination</h2>
+
+    <p>
+        The most useful tool I've found for reasoning about an agent's risk isn't a threat model
+        document. It's a counting rule. An agent becomes dangerous when it holds all three of:
+    </p>
+    <ol>
+        <li>Exposure to untrusted content</li>
+        <li>Access to sensitive data or systems</li>
+        <li>The ability to change state or communicate outward</li>
+    </ol>
+    <p>
+        Any two are usually survivable. An agent that reads untrusted web pages and can send email
+        but holds no private data has little to leak. An agent with deep data access that only ever
+        answers the person in front of it has no channel out. It is the third leg that turns a
+        compromise into an incident.
+    </p>
+    <p>
+        What makes this framing useful is that it turns a vague feeling of risk into an architectural
+        decision. If a design needs all three, you don't argue about whether it feels safe — you put a
+        break in the chain at the point where the third leg appears.
+    </p>
+
+    <h2>The one control that holds structurally</h2>
+
+    <p>
+        Most defenses against prompt injection are probabilistic. Classifiers, pattern matching,
+        instruction hierarchies, delimiters — each raises the cost of an attack and none of them
+        closes it, because the attacker gets to adapt and the defender's surface is natural language.
+        Published evaluations are consistent on this point: defenses that look strong against fixed
+        test sets degrade sharply against attackers who know what they're facing.
+    </p>
+    <p>
+        A human approval step is different in kind. It cannot be argued around by a cleverer prompt,
+        because the thing standing between the agent and the action isn't a model making a judgment.
+        It's a person being asked a question.
+    </p>
+    <p>
+        That doesn't mean approving everything. It means grading by blast radius:
+    </p>
+
+    <table>
+        <tr><th>Action class</th><th>Treatment</th></tr>
+        <tr><td>Read, reversible, low value</td><td>Autonomous</td></tr>
+        <tr><td>Write, reversible, bounded</td><td>Autonomous with caps and audit</td></tr>
+        <tr><td>Irreversible, or moves money, or touches access</td><td>Human approval on the step</td></tr>
+    </table>
+
+    <p>
+        The useful discipline is to decide the ceiling before building the capability. It is much
+        harder to add a boundary to an agent that already has none than to design one in from the start.
+    </p>
+
+    <h2>Agents as entities, not features</h2>
+
+    <p>
+        The shift that changed how I think about this: as autonomy increased, orchestration stopped
+        being the hard part. Getting agents to do the work became tractable well before the
+        organizational questions did.
+    </p>
+    <p>
+        What remained hard was accountability. Who owns this agent. What is it allowed to do. Who
+        answers for it when it does something wrong. Who notices if its behaviour drifts. These are
+        not questions about model capability, and no amount of prompt engineering answers them.
+    </p>
+
+    <div class="callout">
+        <div class="callout-label">The framing that helped</div>
+        <p>
+            Treat an agent as an entity in the organization rather than a feature of an application.
+            It has an owner. It has a defined scope of authority. Its actions are attributable, and
+            its behaviour is reviewable. Once agents are modelled that way, most of the hard questions
+            have familiar answers — because they are the questions organizations already know how to
+            ask about people.
+        </p>
+    </div>
+
+    <h2>Where this leaves us</h2>
+
+    <p>
+        Prompt injection is not solved and may not be solvable in the form people want it solved. That
+        sounds like a counsel of despair and it isn't, because it is the same position we occupy with
+        every other class of software vulnerability. We do not assume our code is free of bugs. We
+        assume it isn't, and we limit what a bug can reach.
+    </p>
+    <p>
+        The equivalent discipline for agents is to stop asking how to guarantee the agent won't be
+        manipulated, and start asking what happens when it is. Narrow the authority. Shorten the
+        credentials. Check at call time. Put a human on the irreversible step. Make every action
+        attributable to both the agent and the person behind it.
+    </p>
+    <p>
+        None of that requires the model to be trustworthy. That is the point.
+    </p>
+
+    <div class="article-footer">
+        <p>
+            This is the first in a series on securing agentic systems in production. Next: trust
+            boundaries in retrieval, and why authorization at query time is harder than it looks.
+        </p>
+        <a href="../index.html#projects" class="btn">← Back to all writing</a>
+    </div>
+
+</article>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.classList.toggle('dark');
+        updateToggleIcons(isDark);
+        try { sessionStorage.setItem('theme', isDark ? 'dark' : 'warm'); } catch(e) {}
+    }
+    function updateToggleIcons(isDark) {
+        const moon = document.querySelector('.icon-moon');
+        const sun = document.querySelector('.icon-sun');
+        if (moon && sun) {
+            moon.style.display = isDark ? 'block' : 'none';
+            sun.style.display = isDark ? 'none' : 'block';
+        }
+    }
+    try {
+        if (sessionStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            updateToggleIcons(true);
+        } else { updateToggleIcons(false); }
+    } catch(e) { updateToggleIcons(false); }
+</script>
+
+</body>
+</html>
